@@ -4,7 +4,6 @@
 using namespace std;
 
 int main() {
-    Test test;
-    cout << "Hello cli" << endl;
-    cout << test.x << endl;
+    Test2 test2;
+    test2.printVersion();
 }

@@ -1,10 +1,7 @@
 #include <iostream>
-#include "main.hpp"
-
-using namespace std;
+#include <version>
 
 int main() {
-    Test2 test;
-    cout << "Hello cli" << endl;
-    cout << test.x << endl;
+    std::cout << "C++20 support: " << __cplusplus << std::endl;
+    return 0;
 }
