@@ -12,7 +12,7 @@ class LogWriter {
 
 public:
 
-    LogWriter(const std::string& filePath, bool enabled);
+    explicit LogWriter(const std::string& filePath, bool enabled);
     
     ~LogWriter();
 
@@ -24,7 +24,7 @@ private:
 
     void asyncWriter();
 
-    bool enabled;
+    const bool enabled;
 
     std::ofstream logFile;
     std::string buffer;
