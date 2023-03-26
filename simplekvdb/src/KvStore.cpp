@@ -3,10 +3,10 @@
 
 using namespace simplekvdb;
 
-KvStore::KvStore(int ident, size_t numBuckets) 
+KvStore::KvStore(int ident, size_t numBuckets, bool loggingEnabled) 
     :   DB_IDENTIFIER(ident), 
         MAX_NUM_ELEMENTS(static_cast<int>(LOAD_FACTOR * numBuckets)),
-        logWriter(aoflogging::getFileName(DB_IDENTIFIER)),
+        logWriter(aoflogging::getFileName(DB_IDENTIFIER), loggingEnabled),
         buckets(numBuckets) {}
 
 size_t KvStore::size() const {

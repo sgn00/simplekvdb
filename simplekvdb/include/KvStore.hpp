@@ -46,7 +46,7 @@ private:
 
 public:
 
-    explicit KvStore(int ident, size_t numBuckets);
+    explicit KvStore(int ident, size_t numBuckets, bool loggingEnabled);
 
     size_t size() const;
 

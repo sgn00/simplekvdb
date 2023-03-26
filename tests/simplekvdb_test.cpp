@@ -11,14 +11,14 @@ TEST_CASE("Example test case") {
 }
 
 TEST_CASE("KvStore initialize") {
-    KvStore kvStore(0, 100);
+    KvStore kvStore(0, 100, false);
     int expectedCapacity = LOAD_FACTOR * 100;
     REQUIRE( expectedCapacity == kvStore.capacity());
     REQUIRE( 0 == kvStore.size());
 }
 
 TEST_CASE("KvStore set") {
-    KvStore kvStore(0, 100);
+    KvStore kvStore(0, 100, false);
     auto res = kvStore.set("abc", "def");
     REQUIRE(res == RetCode::SUCCESS);
     auto res2 = kvStore.set("cde", "fgh");
@@ -30,7 +30,7 @@ TEST_CASE("KvStore set") {
 }
 
 TEST_CASE("KvStore set and get") {
-    KvStore kvStore(0, 100);
+    KvStore kvStore(0, 100, false);
     kvStore.set("abc", "def");
     kvStore.set("cde", "ghi");
     auto [retCode, res] = kvStore.get("abc");
@@ -42,7 +42,7 @@ TEST_CASE("KvStore set and get") {
 }
 
 TEST_CASE("KvStore set overwrite and get") {
-    KvStore kvStore(0, 50);
+    KvStore kvStore(0, 50, false);
     kvStore.set("abc", "def");
     kvStore.set("abc", "cde");
     auto [retCode, res] = kvStore.get("abc");
@@ -51,14 +51,14 @@ TEST_CASE("KvStore set overwrite and get") {
 }
 
 TEST_CASE("KvStore get no exist") {
-    KvStore kvStore(0, 100);
+    KvStore kvStore(0, 100, false);
     auto [retCode, res] = kvStore.get("abc");
     REQUIRE (retCode == RetCode::DOES_NOT_EXIST);
     REQUIRE (res == std::nullopt);
 }
 
 TEST_CASE("KvStore set at capacity returns failure") {
-    KvStore kvStore(0, 50);
+    KvStore kvStore(0, 50, false);
     int cap = LOAD_FACTOR * 50;
     for (int i = 0; i < cap; i++) {
         kvStore.set(std::to_string(i), std::to_string(i));
@@ -70,7 +70,7 @@ TEST_CASE("KvStore set at capacity returns failure") {
 }
 
 TEST_CASE("KvStore del normal success") {
-    KvStore kvStore(0, 50);
+    KvStore kvStore(0, 50, false);
     for (int i = 0; i < 10; i++) {
         kvStore.set(std::to_string(i), std::to_string(i));
     }
@@ -80,7 +80,7 @@ TEST_CASE("KvStore del normal success") {
 }
 
 TEST_CASE("KvStore del no exist") {
-    KvStore kvStore(0, 50);
+    KvStore kvStore(0, 50, false);
     for (int i = 0; i < 10; i++) {
         kvStore.set(std::to_string(i), std::to_string(i));
     }
@@ -90,7 +90,7 @@ TEST_CASE("KvStore del no exist") {
 }
 
 TEST_CASE("KvStore multi-threading set") {
-    KvStore kvStore(0, 1000);
+    KvStore kvStore(0, 1000, false);
     constexpr int numThreads = 10;
     constexpr int numOps = 50;
 
@@ -113,7 +113,7 @@ TEST_CASE("KvStore multi-threading set") {
 }
 
 TEST_CASE("KvStore multi-threading get") {
-    KvStore kvStore(0, 1000);
+    KvStore kvStore(0, 1000, false);
 
     for (int i = 0; i < 500; i++) {
         kvStore.set(std::to_string(i), std::to_string(i));

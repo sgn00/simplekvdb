@@ -4,22 +4,30 @@
 
 using namespace simplekvdb;
 
-LogWriter::LogWriter(const std::string& filePath)
-    : logFile(filePath,std::ios_base::app), exitFlag(false) {
-    asyncWriterThread = std::thread(&LogWriter::asyncWriter, this);
+LogWriter::LogWriter(const std::string& filePath, bool enabled)
+    : enabled(enabled), exitFlag(false) {
+    if (enabled) {
+        logFile = std::ofstream(filePath,std::ios_base::app);
+        asyncWriterThread = std::thread(&LogWriter::asyncWriter, this);
+    }
 }
 
 LogWriter::~LogWriter() {
-    exitFlag = true;
-    cv.notify_one();
-    asyncWriterThread.join();
-    writeToFile();
+    if (enabled) {
+        exitFlag = true;
+        cv.notify_one();
+        asyncWriterThread.join();
+        writeToFile();
+    }
+
 }
 
 void LogWriter::log(const std::string& message) {
-    std::unique_lock<std::mutex> lock(bufferMutex);
-    buffer.append(message + "\n");
-    cv.notify_one();
+    if (enabled) {
+        std::unique_lock<std::mutex> lock(bufferMutex);
+        buffer.append(message + "\n");
+        cv.notify_one();
+    }
 }
 
 void LogWriter::writeToFile() {
