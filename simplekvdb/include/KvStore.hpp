@@ -10,6 +10,7 @@
 #include <unordered_map>
 
 #include "RetCode.hpp"
+#include "LogWriter.hpp"
 
 namespace simplekvdb {
 
@@ -33,8 +34,9 @@ private:
 
     const int MAX_NUM_ELEMENTS;
 
-    std::atomic<size_t> numElements {0};
+    LogWriter logWriter;
 
+    std::atomic<size_t> numElements {0};
 
     Bucket& getBucket(const std::string& key);
 

@@ -1,10 +1,12 @@
 #include "KvStore.hpp"
+#include "LoggingUtil.hpp"
 
 using namespace simplekvdb;
 
 KvStore::KvStore(int ident, size_t numBuckets) 
     :   DB_IDENTIFIER(ident), 
-        MAX_NUM_ELEMENTS(static_cast<int>(LOAD_FACTOR * numBuckets)), 
+        MAX_NUM_ELEMENTS(static_cast<int>(LOAD_FACTOR * numBuckets)),
+        logWriter(aoflogging::getFileName(DB_IDENTIFIER)),
         buckets(numBuckets) {}
 
 size_t KvStore::size() const {
@@ -41,6 +43,8 @@ RetCode KvStore::set(const std::string& key, const std::string& value) {
             break;
         }
     }
+
+    logWriter.log(aoflogging::setCommand(key, value));
 
     if (inserted) {
         return RetCode::SUCCESS_AND_EXISTED;
@@ -82,6 +86,9 @@ RetCode KvStore::del(const std::string& key) {
 
     auto removedCount = initialSize - bucket.data.size();
     numElements -= removedCount;
+
+    logWriter.log(aoflogging::delCommand(key));
+
     if (removedCount == 0) {
         return RetCode::DOES_NOT_EXIST;
     }

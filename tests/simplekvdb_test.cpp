@@ -1,4 +1,7 @@
+#include <thread>
+
 #include <catch2/catch.hpp>
+
 #include "KvStore.hpp"
 
 using namespace simplekvdb;
@@ -84,4 +87,55 @@ TEST_CASE("KvStore del no exist") {
     auto retCode = kvStore.del("20");
     REQUIRE (retCode == RetCode::DOES_NOT_EXIST);
     REQUIRE (kvStore.size() == 10);
+}
+
+TEST_CASE("KvStore multi-threading set") {
+    KvStore kvStore(0, 1000);
+    constexpr int numThreads = 10;
+    constexpr int numOps = 50;
+
+    auto insertOp = [&kvStore](int start) {
+        for (int i = 0; i < numOps; i++) {
+            kvStore.set(std::to_string(start + i), "Value_" + std::to_string(start + i));
+        }
+    };
+
+    std::vector<std::thread> threads;
+    for (int i = 0; i < numThreads; i++) {
+        threads.emplace_back(insertOp, i * numOps);
+    }
+
+    for (auto& t : threads) {
+        t.join();
+    }
+
+    REQUIRE( kvStore.size() == numThreads * numOps);
+}
+
+TEST_CASE("KvStore multi-threading get") {
+    KvStore kvStore(0, 1000);
+
+    for (int i = 0; i < 500; i++) {
+        kvStore.set(std::to_string(i), std::to_string(i));
+    }
+
+    constexpr int numThreads = 10;
+    constexpr int numOps = 50;
+
+    auto eraseOp = [&kvStore](int start) {
+        for (int i = 0; i < numOps; ++i) {
+            kvStore.del(std::to_string(i + start));
+        }
+    };
+
+    std::vector<std::thread> threads;
+    for (int i = 0; i < numThreads; i++) {
+        threads.emplace_back(eraseOp, i * numOps);
+    }
+
+    for (auto& t : threads) {
+        t.join();
+    }
+
+    REQUIRE( kvStore.size() == 0);
 }
