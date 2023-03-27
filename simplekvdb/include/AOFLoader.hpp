@@ -1,16 +1,26 @@
 #pragma once
 
+#include <string>
+
+#include "KvStore.hpp"
+
 namespace simplekvdb {
 
-class AOFLoader {
+    namespace aoflogging {
+        class AOFLoader {
 
-public:
+        public:
 
-    explicit AOFLoader(const std::string& filePath);
+            explicit AOFLoader(const std::string& filePath);
 
-    void loadAndExecute(kvStore& kvStore);
+            bool loadAndExecute(KvStore& kvStore);
+
+        private:
+
+            const std::string filePath;
 
 
-};
+        };
+    }
 
 }

@@ -44,7 +44,7 @@ RetCode KvStore::set(const std::string& key, const std::string& value) {
         }
     }
 
-    logWriter.log(aoflogging::setCommand(key, value));
+    logWriter.log(aoflogging::stringifySetCommand(key, value));
 
     if (inserted) {
         return RetCode::SUCCESS_AND_EXISTED;
@@ -87,7 +87,7 @@ RetCode KvStore::del(const std::string& key) {
     auto removedCount = initialSize - bucket.data.size();
     numElements -= removedCount;
 
-    logWriter.log(aoflogging::delCommand(key));
+    logWriter.log(aoflogging::stringifyDelCommand(key));
 
     if (removedCount == 0) {
         return RetCode::DOES_NOT_EXIST;

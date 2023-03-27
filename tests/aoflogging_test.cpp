@@ -5,12 +5,12 @@
 using namespace simplekvdb;
 
 TEST_CASE("Test setCommand") {
-    auto res = aoflogging::setCommand("123", "abc");
-    REQUIRE(res == "GET|3|123|3|abc");
+    auto res = aoflogging::stringifySetCommand("123", "abc");
+    REQUIRE(res == "SET|3|123|3|abc");
 }
 
 TEST_CASE("Test delCommand") {
-    auto res = aoflogging::delCommand("abc");
+    auto res = aoflogging::stringifyDelCommand("abc");
     REQUIRE(res == "DEL|abc");
 }
 
