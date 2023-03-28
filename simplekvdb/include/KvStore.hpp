@@ -36,6 +36,8 @@ private:
 
     LogWriter logWriter;
 
+    bool loggingEnabled;
+
     std::atomic<size_t> numElements {0};
 
     Bucket& getBucket(const std::string& key);
@@ -51,6 +53,12 @@ public:
     size_t size() const;
 
     size_t capacity() const;
+
+    int getIdent() const;
+
+    void setLoggingEnabled(bool enabled);
+
+    bool isLoggingEnabled();
 
     RetCode set(const std::string& key, const std::string& value);
 

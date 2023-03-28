@@ -6,7 +6,8 @@ using namespace simplekvdb;
 KvStore::KvStore(int ident, size_t numBuckets, bool loggingEnabled) 
     :   DB_IDENTIFIER(ident), 
         MAX_NUM_ELEMENTS(static_cast<int>(LOAD_FACTOR * numBuckets)),
-        logWriter(aoflogging::getFileName(DB_IDENTIFIER), loggingEnabled),
+        logWriter(aoflogging::getFileName(DB_IDENTIFIER)),
+        loggingEnabled(loggingEnabled),
         buckets(numBuckets) {}
 
 size_t KvStore::size() const {
@@ -15,6 +16,10 @@ size_t KvStore::size() const {
 
 size_t KvStore::capacity() const {
     return MAX_NUM_ELEMENTS;
+}
+
+int KvStore::getIdent() const {
+    return DB_IDENTIFIER;
 }
 
 KvStore::Bucket& KvStore::getBucket(const std::string& key) {
@@ -31,6 +36,13 @@ bool KvStore::isFull() const {
     return numElements >= MAX_NUM_ELEMENTS;
 }
 
+void KvStore::setLoggingEnabled(bool enabled) {
+    loggingEnabled = enabled;
+}
+
+bool KvStore::isLoggingEnabled() {
+    return loggingEnabled;
+}
 
 RetCode KvStore::set(const std::string& key, const std::string& value) {
     Bucket& bucket = getBucket(key);
@@ -44,7 +56,9 @@ RetCode KvStore::set(const std::string& key, const std::string& value) {
         }
     }
 
-    logWriter.log(aoflogging::stringifySetCommand(key, value));
+    if (loggingEnabled) {
+        logWriter.log(aoflogging::stringifySetCommand(key, value));
+    }
 
     if (inserted) {
         return RetCode::SUCCESS_AND_EXISTED;
@@ -87,7 +101,9 @@ RetCode KvStore::del(const std::string& key) {
     auto removedCount = initialSize - bucket.data.size();
     numElements -= removedCount;
 
-    logWriter.log(aoflogging::stringifyDelCommand(key));
+    if (loggingEnabled) {
+        logWriter.log(aoflogging::stringifyDelCommand(key));
+    }
 
     if (removedCount == 0) {
         return RetCode::DOES_NOT_EXIST;

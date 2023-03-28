@@ -13,7 +13,7 @@ namespace simplekvdb {
 
         // COMMAND|XX|KEY
         std::string stringifyDelCommand(const std::string& key) {
-            return DEL + DELIM + key;
+            return DEL + DELIM + std::to_string(key.size()) + DELIM + key;
         }
 
         std::string getFileName(int DB_IDENTIFIER) {

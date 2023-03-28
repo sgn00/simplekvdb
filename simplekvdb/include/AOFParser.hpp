@@ -1,4 +1,5 @@
 #pragma once
+#include <stdexcept>
 #include <string>
 #include "Command.hpp"
 
@@ -28,9 +29,11 @@ namespace simplekvdb {
         };
 
 
-
-
-
+        class AOFParseException : public std::runtime_error {
+        public:
+            explicit AOFParseException(const std::string& message)
+                : std::runtime_error(message) {}
+        };
 
     }
 

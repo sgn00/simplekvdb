@@ -3,24 +3,24 @@
 #include <string>
 
 #include "KvStore.hpp"
+#include "Command.hpp"
 
 namespace simplekvdb {
 
     namespace aoflogging {
-        class AOFLoader {
 
-        public:
+            class AOFLoader {
 
-            explicit AOFLoader(const std::string& filePath);
+            public:
+                
+                static bool loadAndExecute(KvStore& kvStore);
 
-            bool loadAndExecute(KvStore& kvStore);
+            private:
 
-        private:
+                static void execute(KvStore& kvStore, tCommand command);
 
-            const std::string filePath;
+            };
 
-
-        };
     }
 
 }

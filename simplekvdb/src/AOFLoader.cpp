@@ -1,14 +1,27 @@
 #include "AOFLoader.hpp"
+#include "AOFParser.hpp"
+#include "LoggingUtil.hpp"
 #include <fstream>
+#include <iostream>
 
-using namespace simplekvdb::aoflogging;
+using namespace simplekvdb;
 
-
-AOFLoader::AOFLoader(const std::string& filePath) : filePath(filePath) {
-
+void aoflogging::AOFLoader::execute(KvStore& kvStore, tCommand command) {
+    if (std::holds_alternative<SetCommand>(command)) {
+        auto c = std::get<SetCommand>(command);
+        kvStore.set(c.key, c.value);
+    } else if (std::holds_alternative<DelCommand>(command)) {
+        auto c = std::get<DelCommand>(command);
+        kvStore.del(c.key);
+    }
 }
 
-bool AOFLoader::loadAndExecute(KvStore& kvStore) {
+
+bool aoflogging::AOFLoader::loadAndExecute(KvStore& kvStore) {
+    bool loggingEnabledState = kvStore.isLoggingEnabled();
+    kvStore.setLoggingEnabled(false);
+    std::string filePath = getFileName(kvStore.getIdent());
+
     std::ifstream inputFile(filePath);
 
     // Check if the file is successfully opened
@@ -16,13 +29,24 @@ bool AOFLoader::loadAndExecute(KvStore& kvStore) {
         return false;
     }
 
+    AOFParser parser;
+
+    int lineNumber = 0;
     std::string line;
     while (std::getline(inputFile, line)) {
-        // Process the line
-
+        lineNumber++;
+        try {
+            simplekvdb::tCommand command = parser.parseLine(line);
+            execute(kvStore, command);
+        } catch (const AOFParseException& e) {
+            std::cerr << "AOFParseException at line " << lineNumber << ": " << e.what() << std::endl;
+        }
     }
 
     // Close the file
     inputFile.close();
+
+    kvStore.setLoggingEnabled(loggingEnabledState);
+
     return true;
 }

@@ -49,22 +49,22 @@ simplekvdb::SetCommand AOFParser::parseSetCommand(const std::string& line, size_
     int keyLength, valueLength;
 
     if (!extractLength(line, pos, keyLength)) {
-        // throw exception
+        throw AOFParseException("Could not extract key lenght in SET command");
     }
     pos++;  // Skip '|'
 
     if (!extractElement(line, pos, keyLength, key)) {
-        // throw exception
+        throw AOFParseException("Could not extract key in SET command");
     }
     pos++;  // Skip '|'
 
     if (!extractLength(line, pos, valueLength)) {
-        // throw exception
+        throw AOFParseException("Could not extract value length in SET command");
     }
     pos++;  // Skip '|'
 
     if (!extractElement(line, pos, valueLength, value)) {
-        // throw exception
+        throw AOFParseException("Could not extract value in SET command");
     }
 
     return {key, value};
@@ -75,12 +75,12 @@ simplekvdb::DelCommand AOFParser::parseDelCommand(const std::string& line, size_
     int keyLength;
 
     if (!extractLength(line, pos, keyLength)) {
-        // throw exception
+        throw AOFParseException("Could not extract key length in DEL command");
     }
     pos++;  // Skip '|'
 
     if (!extractElement(line, pos, keyLength, key)) {
-        // throw exception
+        throw AOFParseException("Could not extract key in DEL command");
     }
 
     return {key};
@@ -92,7 +92,7 @@ simplekvdb::tCommand AOFParser::parseLine(const std::string& line) {
     std::string command;
 
     if (!extractField(line, pos, command)) {
-        // throw exception
+        throw AOFParseException("Could not parse command");
     }
     pos++;  // Skip '|'
 
@@ -100,6 +100,8 @@ simplekvdb::tCommand AOFParser::parseLine(const std::string& line) {
         return parseSetCommand(line, pos);
     } else if (command == DEL) {
         return parseDelCommand(line, pos);
+    } else {
+        throw AOFParseException("Unknown command");
     }
 }
 
