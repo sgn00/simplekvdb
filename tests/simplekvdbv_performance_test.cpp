@@ -30,6 +30,7 @@ double test_function(KvStore& kvStore, int thread_id) {
 }
 
 // TEST_CASE("Multithreaded performance") {
+//     DeleteFile df(2);
 //     KvStore kvStore(2, 10000000, true);
 
 //     std::vector<std::thread> threads;
@@ -52,8 +53,6 @@ double test_function(KvStore& kvStore, int thread_id) {
 //     double avg_time = total_time / kNumThreads;
 //     int total_queries = kNumThreads * kNumOperations;
 //     double qps = total_queries / avg_time;
-
-//     DeleteFile(2);
 
 //     std::cout << "Total time: " << total_time << " seconds" << std::endl;
 //     std::cout << "Average time: " << avg_time << " seconds" << std::endl;
