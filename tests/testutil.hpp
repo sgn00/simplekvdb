@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include "LoggingUtil.hpp"
+#include <iostream>
 
 using namespace simplekvdb;
 
@@ -14,6 +15,7 @@ public:
 
     ~DeleteFile() {
         std::filesystem::path filePath = aoflogging::getFileName(IDENT);
-        std::filesystem::remove(filePath);
+        bool res = std::filesystem::remove(filePath);
+        std::cout << filePath << ", " << res << std::endl;
     }
 };
