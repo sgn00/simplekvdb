@@ -16,6 +16,5 @@ public:
     ~DeleteFile() {
         std::filesystem::path filePath = aoflogging::getFileName(IDENT);
         bool res = std::filesystem::remove(filePath);
-        std::cout << filePath << ", " << res << std::endl;
     }
 };
