@@ -1,4 +1,4 @@
-#include "LogWriter.hpp"
+#include "simplekvdb/LogWriter.hpp"
 
 #include <chrono>
 

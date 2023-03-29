@@ -1,5 +1,5 @@
-#include "KvStore.hpp"
-#include "LoggingUtil.hpp"
+#include "simplekvdb/KvStore.hpp"
+#include "simplekvdb/LoggingUtil.hpp"
 
 using namespace simplekvdb;
 

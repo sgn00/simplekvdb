@@ -1,7 +1,7 @@
 #pragma once
 
 #include <filesystem>
-#include "LoggingUtil.hpp"
+#include "simplekvdb/LoggingUtil.hpp"
 #include <iostream>
 
 using namespace simplekvdb;

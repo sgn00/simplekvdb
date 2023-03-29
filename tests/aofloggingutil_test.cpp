@@ -1,6 +1,6 @@
 #include <catch2/catch.hpp>
 
-#include "LoggingUtil.hpp"
+#include "simplekvdb/LoggingUtil.hpp"
 
 using namespace simplekvdb;
 

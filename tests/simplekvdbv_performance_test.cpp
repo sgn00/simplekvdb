@@ -3,7 +3,7 @@
 #include <chrono>
 #include <iostream>
 
-#include "KvStore.hpp"
+#include "simplekvdb/KvStore.hpp"
 #include "testutil.hpp"
 
 using namespace simplekvdb;

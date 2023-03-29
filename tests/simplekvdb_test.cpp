@@ -2,7 +2,7 @@
 
 #include <catch2/catch.hpp>
 
-#include "KvStore.hpp"
+#include "simplekvdb/KvStore.hpp"
 #include "testutil.hpp"
 
 using namespace simplekvdb;

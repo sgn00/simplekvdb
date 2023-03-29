@@ -1,7 +1,7 @@
 #include <catch2/catch.hpp>
 
-#include "AOFLoader.hpp"
-#include "KvStore.hpp"
+#include "simplekvdb/AOFLoader.hpp"
+#include "simplekvdb/KvStore.hpp"
 #include "testutil.hpp"
 
 using namespace simplekvdb;

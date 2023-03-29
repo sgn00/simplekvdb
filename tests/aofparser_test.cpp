@@ -1,6 +1,6 @@
 #include <catch2/catch.hpp>
 
-#include "AOFParser.hpp"
+#include "simplekvdb/AOFParser.hpp"
 
 using namespace simplekvdb::aoflogging;
 

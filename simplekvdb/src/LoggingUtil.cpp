@@ -1,6 +1,6 @@
 #include <string>
 
-#include "LoggingUtil.hpp"
+#include "simplekvdb/LoggingUtil.hpp"
 
 namespace simplekvdb {
 
