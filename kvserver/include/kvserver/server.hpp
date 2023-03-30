@@ -17,13 +17,13 @@ private:
 
     const int size = 10'000'000;
 
+    const int port = 9095;
+
     const int DB_IDENTIFIER = 1;
 
     simplekvdb::KvStore kvStore;
 
     rpc::server server;
-
-    const int port = 8080;
 
     void bindFunctions();
 

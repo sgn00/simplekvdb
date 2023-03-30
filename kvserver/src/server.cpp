@@ -3,7 +3,9 @@
 
 using namespace kvserver;
 
-Server::Server() : kvStore(DB_IDENTIFIER, size, false), server(port) {}
+Server::Server() : kvStore(DB_IDENTIFIER, size, false), server(port) {
+    std::cout << "Using port: " << port << std::endl;
+}
 
 void Server::start() {
     bindFunctions();
@@ -13,15 +15,15 @@ void Server::start() {
 
 void Server::bindFunctions() {
     server.bind("set", 
-        [this](const std::string& key, const std::string& value){ set(key, value); }
+        [this](const std::string& key, const std::string& value){ return set(key, value); }
     );
 
     server.bind("get", 
-        [this](const std::string& key){ get(key); }
+        [this](const std::string& key){ return get(key); }
     ); 
 
     server.bind("del", 
-        [this](const std::string& key){ del(key); }
+        [this](const std::string& key){ return del(key); }
     );   
 }
 

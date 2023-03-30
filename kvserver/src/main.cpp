@@ -1,17 +1,10 @@
-#include "rpc/server.h"
 #include "kvserver/server.hpp"
 #include <string>
 #include <iostream>
 using std::string;
 
 int main() {
-  rpc::server srv(8080);
-
-  srv.bind("echo", [](string const& s) {
-    std::cout << s << std::endl;
-    return string("> ") + s;
-  });
-
-  srv.run();
+  kvserver::Server server;
+  server.start();
   return 0;
 }
