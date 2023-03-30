@@ -6,9 +6,6 @@ using namespace kvserver;
 
 Server::Server() : kvStore(DB_IDENTIFIER, size, true), server(port) {
     std::cout << "Using port: " << port << std::endl;
-
-    // Load old db
-    //simplekvdb::aoflogging::AOFLoader::loadAndExecute(kvStore);
 }
 
 void Server::start() {

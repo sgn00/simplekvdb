@@ -25,7 +25,6 @@ TEST_CASE("Log, Load and Parse Test 1") {
     int numExpected = 10 - 5;
 
     KvStore kvStore(1, 100, true);
-    aoflogging::AOFLoader::loadAndExecute(kvStore);
     REQUIRE (kvStore.size() == numExpected);
     for (int i = 6; i < 9; i++) {
         auto res = kvStore.get(std::to_string(i));

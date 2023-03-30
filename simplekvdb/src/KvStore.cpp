@@ -1,5 +1,6 @@
 #include "simplekvdb/KvStore.hpp"
 #include "simplekvdb/LoggingUtil.hpp"
+#include "simplekvdb/AOFLoader.hpp"
 
 using namespace simplekvdb;
 
@@ -8,7 +9,11 @@ KvStore::KvStore(int ident, size_t numBuckets, bool loggingEnabled)
         MAX_NUM_ELEMENTS(static_cast<int>(LOAD_FACTOR * numBuckets)),
         logWriter(aoflogging::getFileName(DB_IDENTIFIER)),
         loggingEnabled(loggingEnabled),
-        buckets(numBuckets) {}
+        buckets(numBuckets) {
+
+    aoflogging::AOFLoader::loadAndExecute(*this);
+
+}
 
 size_t KvStore::size() const {
     return static_cast<size_t>(numElements);
