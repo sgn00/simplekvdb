@@ -1,4 +1,5 @@
 #include "rpc/server.h"
+#include "kvserver/server.hpp"
 #include <string>
 #include <iostream>
 using std::string;
