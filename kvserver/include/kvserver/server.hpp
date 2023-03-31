@@ -9,7 +9,7 @@ class Server {
 
 public:
 
-    Server();
+    Server(int port, bool loggingEnabled);
 
     void start();
 
@@ -17,7 +17,7 @@ private:
 
     const int size = 10'000'000;
 
-    const int port = 9095;
+    const int port;
 
     const int DB_IDENTIFIER = 1;
 

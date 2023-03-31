@@ -1,7 +1,6 @@
 #include "simplekvdb/LogWriter.hpp"
 
 #include <chrono>
-#include <iostream>
 
 using namespace simplekvdb;
 
@@ -23,14 +22,12 @@ LogWriter::~LogWriter()
 void LogWriter::log(const std::string &message)
 {
     std::unique_lock<std::mutex> lock(bufferMutex);
-     std::cout << "Logging: " << message << std::endl;
     buffer.append(message + "\n");
     cv.notify_one();
 }
 
 void LogWriter::writeToFile()
 {
-    std::cout << "Writing to file" << std::endl;
     logFile << buffer;
     logFile.flush();
     buffer.clear();

@@ -4,26 +4,27 @@
 
 using namespace kvserver;
 
-Server::Server() : kvStore(DB_IDENTIFIER, size, true), server(port) {
+Server::Server(int port, bool loggingEnabled) : port(port), kvStore(DB_IDENTIFIER, size, loggingEnabled), server(port) {
     std::cout << "Using port: " << port << std::endl;
+    std::cout << "Logging enabled: " << (loggingEnabled ? "true" : "false") << std::endl;
 }
 
 void Server::start() {
     bindFunctions();
-    std::cout << "Starting server" << std::endl;
+    std::cout << "Running server..." << std::endl;
     server.run();
 }
 
 void Server::bindFunctions() {
-    server.bind("set", 
+    server.bind("SET", 
         [this](const std::string& key, const std::string& value){ return set(key, value); }
     );
 
-    server.bind("get", 
+    server.bind("GET", 
         [this](const std::string& key){ return get(key); }
     ); 
 
-    server.bind("del", 
+    server.bind("DEL", 
         [this](const std::string& key){ return del(key); }
     );   
 }
