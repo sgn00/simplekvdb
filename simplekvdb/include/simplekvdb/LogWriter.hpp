@@ -30,7 +30,7 @@ private:
     std::condition_variable cv;
     std::atomic<bool> exitFlag;
     std::thread asyncWriterThread;
-    unsigned int asyncIntervalSeconds = 60;
+    unsigned int asyncIntervalSeconds = 10;
 
 };
 

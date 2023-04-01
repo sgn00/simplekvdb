@@ -16,3 +16,21 @@ TEST_CASE("Test parse del command") {
     auto res = std::get<simplekvdb::DelCommand>(AOFParser::parseLine(line));
     REQUIRE (res.key == "12345678");
 }
+
+TEST_CASE("Test parse hdel command") {
+    std::string line {"HDEL|4|abcd|2|ab|3|123"};
+    auto res = std::get<simplekvdb::HDelCommand>(AOFParser::parseLine(line));
+    REQUIRE (res.key == "abcd");
+    REQUIRE (res.fields[0] == "ab");
+    REQUIRE (res.fields[1] == "123");
+}
+
+TEST_CASE("Test parse hset command") {
+    std::string line {"HSET|4|abcd|2|ab|3|123|10|1234567890|1|1"};
+    auto res = std::get<simplekvdb::HSetCommand>(AOFParser::parseLine(line));
+    REQUIRE (res.key == "abcd");
+    REQUIRE (res.fieldValuePairs[0].first == "ab");
+    REQUIRE (res.fieldValuePairs[0].second == "123");
+    REQUIRE (res.fieldValuePairs[1].first == "1234567890");
+    REQUIRE (res.fieldValuePairs[1].second == "1");
+}

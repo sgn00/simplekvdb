@@ -21,6 +21,10 @@ namespace simplekvdb {
 
             static simplekvdb::DelCommand parseDelCommand(const std::string& line, size_t& pos);
 
+            static simplekvdb::HDelCommand parseHDelCommand(const std::string& line, size_t& pos);
+
+            static simplekvdb::HSetCommand parseHSetCommand(const std::string& line, size_t& pos);
+
         public:
 
             static simplekvdb::tCommand parseLine(const std::string& line);

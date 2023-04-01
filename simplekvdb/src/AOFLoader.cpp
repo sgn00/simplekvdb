@@ -13,6 +13,12 @@ void aoflogging::AOFLoader::execute(KvStore& kvStore, tCommand command) {
     } else if (std::holds_alternative<DelCommand>(command)) {
         auto c = std::get<DelCommand>(command);
         kvStore.del(c.key);
+    } else if (std::holds_alternative<HDelCommand>(command)) {
+        auto c = std::get<HDelCommand>(command);
+        kvStore.hdel(c.key, c.fields);
+    } else if (std::holds_alternative<HSetCommand>(command)) {
+        auto c = std::get<HSetCommand>(command);
+        kvStore.hset(c.key, c.fieldValuePairs);
     }
 }
 

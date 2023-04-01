@@ -1,6 +1,7 @@
 #pragma once
 #include <variant>
 #include <string>
+#include <vector>
 
 namespace simplekvdb {
 
@@ -13,5 +14,15 @@ namespace simplekvdb {
         std::string key;
     };
 
-    using tCommand = std::variant<simplekvdb::SetCommand,simplekvdb::DelCommand>;
+    struct HSetCommand {
+        std::string key;
+        std::vector<std::pair<std::string,std::string>> fieldValuePairs;
+    };
+
+    struct HDelCommand {
+        std::string key;
+        std::vector<std::string> fields;
+    };
+
+    using tCommand = std::variant<simplekvdb::SetCommand,simplekvdb::DelCommand,simplekvdb::HSetCommand,simplekvdb::HDelCommand>;
 }

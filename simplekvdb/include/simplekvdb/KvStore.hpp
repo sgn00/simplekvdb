@@ -66,9 +66,13 @@ public:
 
     RetCode del(const std::string& key);
 
-    // bool hset(const std::string& key, const std::vector<std::pair<std::string,std::string>>& fieldValuePairs);
+    std::pair<RetCode,int> hset(const std::string& key, const std::vector<std::pair<std::string,std::string>>& fieldValuePairs);
 
-    // std::optional<std::string> hget(const std::string& key, const std::string& field);
+    std::pair<RetCode,std::optional<std::string>> hget(const std::string& key, const std::string& field) const;
+
+    std::pair<RetCode,int> hdel(const std::string& key, const std::vector<std::string>& fields);
+
+
 
 };
 
