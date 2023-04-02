@@ -1,9 +1,11 @@
 #pragma once
 #include "rpc/server.h"
 #include "simplekvdb/KvStore.hpp"
+#include <tuple>
 
 namespace kvserver {
 
+using CommResult = std::tuple<int,int,std::string,int>;
 
 class Server {
 
@@ -27,11 +29,13 @@ private:
 
     void bindFunctions();
 
-    int set(const std::string& key, const std::string& value);
+    static CommResult convertToCommResult(const simplekvdb::Result& r);
 
-    std::pair<int,std::optional<std::string>> get(const std::string& key);
+    CommResult set(const std::string& key, const std::string& value);
 
-    int del(const std::string& key);
+    CommResult get(const std::string& key);
+
+    CommResult del(const std::string& key);
 
 };
 

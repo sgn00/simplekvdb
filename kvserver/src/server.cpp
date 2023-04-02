@@ -29,20 +29,37 @@ void Server::bindFunctions() {
     );   
 }
 
-int Server::set(const std::string& key, const std::string& value) {
+CommResult Server::set(const std::string& key, const std::string& value) {
     std::cout << "Set called: " << key << "," << value << std::endl; 
-    simplekvdb::RetCode res = kvStore.set(key, value);
-    return static_cast<int>(res);
+    auto res = kvStore.set(key, value);
+    return convertToCommResult(res);
 }
 
-std::pair<int,std::optional<std::string>> Server::get(const std::string& key) {
+CommResult Server::get(const std::string& key) {
     std::cout << "Get called: " << key << std::endl;
-    auto [retCode, res] = kvStore.get(key);
-    return std::make_pair(static_cast<int>(retCode), res);
+    auto res = kvStore.get(key);
+    return convertToCommResult(res);
 }
 
-int Server::del(const std::string& key) {
+CommResult Server::del(const std::string& key) {
     std::cout << "Del called: " << key << std::endl;
-    simplekvdb::RetCode res = kvStore.del(key);
-    return static_cast<int>(res);
+    auto res = kvStore.del(key);
+    return convertToCommResult(res);
+}
+
+CommResult Server::convertToCommResult(const simplekvdb::Result& r) {
+    int field1, field2, field4 = -1;
+    std::string field3;
+    
+    field1 = static_cast<int>(r.status());
+    if (r.status() == simplekvdb::Result::Status::Error) {
+        field2 = static_cast<int>(r.error_code());
+    } else {
+        if (r.holds_type<std::string>()) {
+            field3 = r.value<std::string>();
+        } else if (r.holds_type<int>()) {
+            field4 = r.value<int>();
+        }
+    }
+    return std::make_tuple(field1, field2, field3, field4);
 }

@@ -23,11 +23,11 @@ TEST_CASE("KvStore set") {
     DeleteFile df(0);
     KvStore kvStore(0, 100, false);
     auto res = kvStore.set("abc", "def");
-    REQUIRE(res == RetCode::SUCCESS);
+    REQUIRE(res.status() == Result::Status::OK);
     auto res2 = kvStore.set("cde", "fgh");
-    REQUIRE(res == RetCode::SUCCESS);
+    REQUIRE(res2.status() == Result::Status::OK);
     auto res3 = kvStore.set("cde", "ghi");
-    REQUIRE(res3 == RetCode::SUCCESS_AND_EXISTED);
+    REQUIRE(res3.status() == Result::Status::OK);
     auto currSize = kvStore.size();
     REQUIRE(currSize == 2);
 }
@@ -37,12 +37,12 @@ TEST_CASE("KvStore set and get") {
     KvStore kvStore(0, 100, false);
     kvStore.set("abc", "def");
     kvStore.set("cde", "ghi");
-    auto [retCode, res] = kvStore.get("abc");
-    REQUIRE (res.value() == "def");
-    REQUIRE (retCode == RetCode::SUCCESS);
-    auto [retCode2, res2] = kvStore.get("cde");
-    REQUIRE( res2.value() == "ghi");
-    REQUIRE (retCode2 == RetCode::SUCCESS);
+    auto res = kvStore.get("abc");
+    REQUIRE (res.status() == Result::Status::OK);
+    REQUIRE (res.value<std::string>() == "def");
+    auto res2 = kvStore.get("cde");
+    REQUIRE (res2.status() == Result::Status::OK);
+    REQUIRE(res2.value<std::string>() == "ghi");
 }
 
 TEST_CASE("KvStore set overwrite and get") {
@@ -50,17 +50,17 @@ TEST_CASE("KvStore set overwrite and get") {
     KvStore kvStore(0, 50, false);
     kvStore.set("abc", "def");
     kvStore.set("abc", "cde");
-    auto [retCode, res] = kvStore.get("abc");
-    REQUIRE (retCode == RetCode::SUCCESS);
-    REQUIRE (res.value() == "cde");
+    auto res = kvStore.get("abc");
+    REQUIRE (res.status() == Result::Status::OK);
+    REQUIRE (res.value<std::string>() == "cde");
 }
 
 TEST_CASE("KvStore get no exist") {
     DeleteFile df(0);
     KvStore kvStore(0, 100, false);
-    auto [retCode, res] = kvStore.get("abc");
-    REQUIRE (retCode == RetCode::DOES_NOT_EXIST);
-    REQUIRE (res == std::nullopt);
+    auto res = kvStore.get("abc");
+    REQUIRE (res.status() == Result::Status::Error);
+    REQUIRE (res.error_code() == Result::ErrorCode::KeyNotFound);
 }
 
 TEST_CASE("KvStore set at capacity returns failure") {
@@ -72,8 +72,9 @@ TEST_CASE("KvStore set at capacity returns failure") {
     }
     REQUIRE (kvStore.size() == cap);
     
-    auto retCode = kvStore.set("abc", "cde");
-    REQUIRE (retCode == RetCode::FAILURE);
+    auto res = kvStore.set("abc", "cde");
+    REQUIRE (res.status() == Result::Status::Error);
+    REQUIRE (res.error_code() == Result::ErrorCode::DBFull);
 }
 
 TEST_CASE("KvStore del normal success") {
@@ -82,8 +83,8 @@ TEST_CASE("KvStore del normal success") {
     for (int i = 0; i < 10; i++) {
         kvStore.set(std::to_string(i), std::to_string(i));
     }
-    auto retCode = kvStore.del("5");
-    REQUIRE (retCode == RetCode::SUCCESS);
+    auto res = kvStore.del("5");
+    REQUIRE (res.status() == Result::Status::OK);
     REQUIRE (kvStore.size() == 9);
 }
 
@@ -93,8 +94,9 @@ TEST_CASE("KvStore del no exist") {
     for (int i = 0; i < 10; i++) {
         kvStore.set(std::to_string(i), std::to_string(i));
     }
-    auto retCode = kvStore.del("20");
-    REQUIRE (retCode == RetCode::DOES_NOT_EXIST);
+    auto res = kvStore.del("20");
+    REQUIRE (res.status() == Result::Status::OK);
+    REQUIRE (res.value<int>() == 0);
     REQUIRE (kvStore.size() == 10);
 }
 

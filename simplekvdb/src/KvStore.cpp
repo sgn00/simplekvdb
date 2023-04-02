@@ -49,7 +49,7 @@ bool KvStore::isLoggingEnabled() {
     return loggingEnabled;
 }
 
-RetCode KvStore::set(const std::string& key, const std::string& value) {
+Result KvStore::set(const std::string& key, const std::string& value) {
     Bucket& bucket = getBucket(key);
     std::unique_lock lock(bucket.mutex);
     bool inserted = false;
@@ -66,33 +66,33 @@ RetCode KvStore::set(const std::string& key, const std::string& value) {
     }
 
     if (inserted) {
-        return RetCode::SUCCESS_AND_EXISTED;
+        return Result{Result::Status::OK};
     } else if (!isFull()) {
         bucket.data.emplace_back(key, value);
         ++numElements;
-        return RetCode::SUCCESS;
+        return Result{Result::Status::OK};
     } else {
-        return RetCode::FAILURE;
+        return Result{Result::Status::Error, Result::ErrorCode::DBFull};
     }
 }
 
-std::pair<RetCode,std::optional<std::string>> KvStore::get(const std::string& key) const {
+Result KvStore::get(const std::string& key) const {
     const Bucket& bucket = getBucket(key);
     std::shared_lock lock(bucket.mutex);
 
     for (const auto& kv : bucket.data) {
         if (kv.first == key) {
             if (std::holds_alternative<std::string>(kv.second)) {
-                return std::make_pair(RetCode::SUCCESS,std::get<std::string>(kv.second));
+                return Result{Result::Status::OK, std::get<std::string>(kv.second)};
             } else {
-                return std::make_pair(RetCode::WRONG_TYPE, std::nullopt);
+                return Result{Result::Status::Error, Result::ErrorCode::WrongType};
             }
         }
     }
-    return std::make_pair(RetCode::DOES_NOT_EXIST,std::nullopt);
+    return Result{Result::Status::Error, Result::ErrorCode::KeyNotFound};
 }
 
-RetCode KvStore::del(const std::string& key) {
+Result KvStore::del(const std::string& key) {
     Bucket& bucket = getBucket(key);
     std::unique_lock lock(bucket.mutex);
 
@@ -110,8 +110,94 @@ RetCode KvStore::del(const std::string& key) {
         logWriter.log(aoflogging::stringifyDelCommand(key));
     }
 
-    if (removedCount == 0) {
-        return RetCode::DOES_NOT_EXIST;
+    return Result{Result::Status::OK, static_cast<int>(removedCount)};
+}
+
+Result KvStore::hset(const std::string& key, const std::vector<std::pair<std::string,std::string>>& fieldValuePairs) {
+    Bucket& bucket = getBucket(key);
+    std::unique_lock lock(bucket.mutex);
+    bool inserted = false;
+    for (auto& kv : bucket.data) {
+        if (kv.first == key) {
+            if (std::holds_alternative<std::unordered_map<std::string,std::string>>(kv.second)) {
+                std::unordered_map<std::string,std::string> umap;
+                for (const auto& [k,v] : fieldValuePairs) {
+                    umap[k] = v;
+                }
+                kv.second = umap;
+                inserted = true;
+                break;
+            } else {
+                return Result{Result::Status::Error, Result::ErrorCode::WrongType};
+            }
+        }
     }
-    return RetCode::SUCCESS;
+
+    // if (loggingEnabled) {
+    //     logWriter.log(aoflogging::stringifySetCommand(key, value));
+    // }
+
+    if (inserted) {
+        return Result{Result::Status::OK, static_cast<int>(fieldValuePairs.size())};
+    } else if (!isFull()) {
+        std::unordered_map<std::string,std::string> umap;
+        for (const auto& [k,v] : fieldValuePairs) {
+            umap[k] = v;
+        }
+        bucket.data.emplace_back(key, umap);
+        ++numElements;
+        return Result{Result::Status::OK, static_cast<int>(fieldValuePairs.size())};
+    } else {
+        return Result{Result::Status::Error, Result::ErrorCode::DBFull};
+    }
+}
+
+Result KvStore::hget(const std::string& key, const std::string& field) const {
+    const Bucket& bucket = getBucket(key);
+    std::shared_lock lock(bucket.mutex);
+
+    for (const auto& kv : bucket.data) {
+        if (kv.first == key) {
+            if (std::holds_alternative<std::unordered_map<std::string,std::string>>(kv.second)) {
+                const auto& umap = std::get<std::unordered_map<std::string,std::string>>(kv.second);
+                if (umap.count(field)) {
+                    return Result{Result::Status::OK, umap.at(field)};
+                } else {
+                    return Result{Result::Status::Error, Result::ErrorCode::FieldNotFound};
+                }
+            } else {
+                return Result{Result::Status::Error, Result::ErrorCode::WrongType};
+            }
+        }
+    }
+    return Result{Result::Status::Error, Result::ErrorCode::KeyNotFound};
+}
+
+Result KvStore::hdel(const std::string& key, const std::vector<std::string>& fields) {
+    Bucket& bucket = getBucket(key);
+    std::unique_lock lock(bucket.mutex);
+
+    for (auto& kv : bucket.data) {
+        if (kv.first == key) {
+            if (std::holds_alternative<std::unordered_map<std::string,std::string>>(kv.second)) {
+                int count = 0;
+                for (const auto& field : fields) {
+                    auto& umap = std::get<std::unordered_map<std::string,std::string>>(kv.second);
+                    if (umap.erase(field)) {
+                        ++count;
+                    }
+
+                    // if (loggingEnabled) {
+                    //     logWriter.log(aoflogging::stringifyDelCommand(key));
+                    // }
+
+                    return Result{Result::Status::OK, count};
+                }
+            } else {
+                return Result{Result::Status::Error, Result::ErrorCode::WrongType};
+            }
+        }
+    }
+
+    return Result{Result::Status::Error, Result::ErrorCode::KeyNotFound};
 }

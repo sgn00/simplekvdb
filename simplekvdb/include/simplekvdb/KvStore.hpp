@@ -9,7 +9,7 @@
 #include <atomic>
 #include <unordered_map>
 
-#include "RetCode.hpp"
+#include "Result.hpp"
 #include "LogWriter.hpp"
 
 namespace simplekvdb {
@@ -60,17 +60,17 @@ public:
 
     bool isLoggingEnabled();
 
-    RetCode set(const std::string& key, const std::string& value);
+    Result set(const std::string& key, const std::string& value);
 
-    std::pair<RetCode,std::optional<std::string>> get(const std::string& key) const;
+    Result get(const std::string& key) const;
 
-    RetCode del(const std::string& key);
+    Result del(const std::string& key);
 
-    std::pair<RetCode,int> hset(const std::string& key, const std::vector<std::pair<std::string,std::string>>& fieldValuePairs);
+    Result hset(const std::string& key, const std::vector<std::pair<std::string,std::string>>& fieldValuePairs);
 
-    std::pair<RetCode,std::optional<std::string>> hget(const std::string& key, const std::string& field) const;
+    Result hget(const std::string& key, const std::string& field) const;
 
-    std::pair<RetCode,int> hdel(const std::string& key, const std::vector<std::string>& fields);
+    Result hdel(const std::string& key, const std::vector<std::string>& fields);
 
 
 

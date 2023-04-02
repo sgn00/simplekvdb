@@ -28,7 +28,7 @@ TEST_CASE("Log, Load and Parse Test 1") {
     REQUIRE (kvStore.size() == numExpected);
     for (int i = 6; i < 9; i++) {
         auto res = kvStore.get(std::to_string(i));
-        REQUIRE (res.first == RetCode::SUCCESS);
+        REQUIRE (res.status() == Result::Status::OK);
     }
 
 }
