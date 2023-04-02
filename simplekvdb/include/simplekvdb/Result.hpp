@@ -7,16 +7,16 @@ namespace simplekvdb {
     class Result {
     public:
         enum class Status : int {
-            OK,
-            Error
+            OK = 0,
+            Error = 1
         };
 
         enum class ErrorCode : int {
-            None,
-            KeyNotFound,
-            FieldNotFound,
-            WrongType,
-            DBFull
+            None = 0,
+            KeyNotFound = 1,
+            FieldNotFound = 2,
+            WrongType = 3,
+            DBFull = 4
         };
 
         Result(Status status, ErrorCode error_code = ErrorCode::None)

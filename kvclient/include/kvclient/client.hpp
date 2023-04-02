@@ -24,6 +24,7 @@ private:
 
     rpc::client client;
 
+    static std::string getErrorMessage(int errorCode);
 
     std::string sendSet(const SetCommand& setCommand);
 

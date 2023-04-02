@@ -1,8 +1,10 @@
 #include "kvclient/client.hpp"
-#include "simplekvdb/RetCode.hpp"
+#include "simplekvdb/Result.hpp"
 
 using namespace kvclient;
 using namespace simplekvdb;
+
+using CommResult = std::tuple<int,int,std::string,int>;
 
 Client::Client(const std::string& serverIP, int port) : serverIP(serverIP), port(port), client(serverIP, port) {
 
@@ -21,31 +23,49 @@ std::string Client::send(const tParseCommand& command) {
     }
 }
 
-std::string Client::sendSet(const SetCommand& setCommand) {
-    int retCode = client.call(SET, setCommand.key, setCommand.value).as<int>();
-    if (retCode == static_cast<int>(RetCode::SUCCESS) || retCode == static_cast<int>(RetCode::SUCCESS_AND_EXISTED)) {
-        return "OK";
-    } else {
-        return "(integer) 0";
+std::string Client::getErrorMessage(int errorCode) {
+    switch (errorCode) {
+        case static_cast<int>(simplekvdb::Result::ErrorCode::KeyNotFound):
+            return "(server error) key not found";
+        case static_cast<int>(simplekvdb::Result::ErrorCode::FieldNotFound):
+            return "(server error) field not found";
+        case static_cast<int>(simplekvdb::Result::ErrorCode::WrongType):
+            return "(server error) wrong key type";
+        case static_cast<int>(simplekvdb::Result::ErrorCode::DBFull):
+            return "(server error) DB is full";
+        case static_cast<int>(simplekvdb::Result::ErrorCode::None):
+            return "(server) no error";
+        default:
+            return "(server) unknown error";
     }
+}
+
+std::string Client::sendSet(const SetCommand& setCommand) {
+    auto [status, errorCode, strResult, intResult] = client.call(SET, setCommand.key, setCommand.value).as<CommResult>();
+
+    if (status == static_cast<int>(simplekvdb::Result::Status::OK)) {
+        return "OK";
+    }
+
+    return getErrorMessage(errorCode);
 }
 
 std::string Client::sendGet(const GetCommand& getCommand) {
-    auto [retCode, val] = client.call(GET, getCommand.key).as<std::pair<int,std::optional<std::string>>>();
-    if (retCode == static_cast<int>(RetCode::SUCCESS)) {
-        return "\"" + val.value() + "\"";
-    } else if (retCode == static_cast<int>(RetCode::DOES_NOT_EXIST)) {
-        return "<nil>";
-    } else {
-        return "(integer) 0";
+    auto [status, errorCode, strResult, intResult] = client.call(GET, getCommand.key).as<CommResult>();
+
+    if (status == static_cast<int>(simplekvdb::Result::Status::OK)) {
+        return "\"" + strResult + "\"";
     }
+
+    return getErrorMessage(errorCode);
 }
 
 std::string Client::sendDel(const DelCommand& delCommand) {
-    int retCode = client.call(DEL, delCommand.key).as<int>();
-    if (retCode == static_cast<int>(RetCode::SUCCESS)) {
-        return "(integer) 1";
-    } else {
-        return "(integer) 0";
+    auto [status, errorCode, strResult, intResult] = client.call(DEL, delCommand.key).as<CommResult>();
+
+    if (status == static_cast<int>(simplekvdb::Result::Status::OK)) {
+        return "(integer) " + std::to_string(intResult);
     }
+
+    return getErrorMessage(errorCode);
 }
