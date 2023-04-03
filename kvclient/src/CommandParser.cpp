@@ -72,19 +72,19 @@ SetCommand CommandParser::parseSet(const std::vector<std::string>& tokens) {
     if (tokens.size() != 3) {
         throw InvalidCommandException("Invalid SET command format. Format: SET key value");
     }
-    return SetCommand(tokens[1], tokens[2]);
+    return SetCommand{tokens[1], tokens[2]};
 }
 
 GetCommand CommandParser::parseGet(const std::vector<std::string>& tokens) {
     if (tokens.size() != 2) {
         throw InvalidCommandException("Invalid GET command format. Format: GET key");
     }
-    return GetCommand(tokens[1]);
+    return GetCommand{tokens[1]};
 }
 
 DelCommand CommandParser::parseDel(const std::vector<std::string>& tokens) {
     if (tokens.size() != 2) {
         throw InvalidCommandException("Invalid DEL command format. Format: DEL key");
     }
-    return DelCommand(tokens[1]);  
+    return DelCommand{tokens[1]};  
 }

@@ -7,9 +7,12 @@ using namespace simplekvdb;
 KvStore::KvStore(int ident, size_t numBuckets, bool loggingEnabled) 
     :   DB_IDENTIFIER(ident), 
         MAX_NUM_ELEMENTS(static_cast<int>(LOAD_FACTOR * numBuckets)),
-        logWriter(aoflogging::getFileName(DB_IDENTIFIER)),
         loggingEnabled(loggingEnabled),
         buckets(numBuckets) {
+
+    if (loggingEnabled) {
+        logWriter.emplace(aoflogging::getFileName(DB_IDENTIFIER));
+    }
 
     aoflogging::AOFLoader::loadAndExecute(*this);
 
@@ -62,7 +65,7 @@ Result KvStore::set(const std::string& key, const std::string& value) {
     }
 
     if (loggingEnabled) {
-        logWriter.log(aoflogging::stringifySetCommand(key, value));
+        logWriter.value().log(aoflogging::stringifySetCommand(key, value));
     }
 
     if (inserted) {
@@ -107,7 +110,7 @@ Result KvStore::del(const std::string& key) {
     numElements -= removedCount;
 
     if (loggingEnabled) {
-        logWriter.log(aoflogging::stringifyDelCommand(key));
+        logWriter.value().log(aoflogging::stringifyDelCommand(key));
     }
 
     return Result{Result::Status::OK, static_cast<int>(removedCount)};
@@ -134,7 +137,7 @@ Result KvStore::hset(const std::string& key, const std::vector<std::pair<std::st
     }
 
     // if (loggingEnabled) {
-    //     logWriter.log(aoflogging::stringifySetCommand(key, value));
+    //     logWriter.value().log(aoflogging::stringifySetCommand(key, value));
     // }
 
     if (inserted) {
@@ -188,7 +191,7 @@ Result KvStore::hdel(const std::string& key, const std::vector<std::string>& fie
                     }
 
                     // if (loggingEnabled) {
-                    //     logWriter.log(aoflogging::stringifyDelCommand(key));
+                    //     logWriter.value().log(aoflogging::stringifyDelCommand(key));
                     // }
 
                     return Result{Result::Status::OK, count};

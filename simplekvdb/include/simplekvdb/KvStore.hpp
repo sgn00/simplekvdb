@@ -14,6 +14,10 @@
 
 namespace simplekvdb {
 
+    namespace aoflogging {
+        class AOFLoader;
+    }
+
     using TValueVariant = std::variant<std::string,std::unordered_map<std::string,std::string>>;
 
     const double LOAD_FACTOR = 0.75;
@@ -34,7 +38,7 @@ private:
 
     const int MAX_NUM_ELEMENTS;
 
-    LogWriter logWriter;
+    std::optional<LogWriter> logWriter;
 
     bool loggingEnabled;
 
@@ -46,6 +50,11 @@ private:
 
     bool isFull() const;
 
+    void setLoggingEnabled(bool enabled);
+
+    friend class aoflogging::AOFLoader;
+
+
 public:
 
     explicit KvStore(int ident, size_t numBuckets, bool loggingEnabled);
@@ -55,8 +64,6 @@ public:
     size_t capacity() const;
 
     int getIdent() const;
-
-    void setLoggingEnabled(bool enabled);
 
     bool isLoggingEnabled();
 

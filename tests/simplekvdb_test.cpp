@@ -12,7 +12,6 @@ TEST_CASE("Example test case") {
 }
 
 TEST_CASE("KvStore initialize") {
-    DeleteFile df(0);
     KvStore kvStore(0, 100, false);
     int expectedCapacity = LOAD_FACTOR * 100;
     REQUIRE( expectedCapacity == kvStore.capacity());
@@ -20,7 +19,6 @@ TEST_CASE("KvStore initialize") {
 }
 
 TEST_CASE("KvStore set") {
-    DeleteFile df(0);
     KvStore kvStore(0, 100, false);
     auto res = kvStore.set("abc", "def");
     REQUIRE(res.status() == Result::Status::OK);
@@ -33,7 +31,6 @@ TEST_CASE("KvStore set") {
 }
 
 TEST_CASE("KvStore set and get") {
-    DeleteFile df(0);
     KvStore kvStore(0, 100, false);
     kvStore.set("abc", "def");
     kvStore.set("cde", "ghi");
@@ -46,7 +43,6 @@ TEST_CASE("KvStore set and get") {
 }
 
 TEST_CASE("KvStore set overwrite and get") {
-    DeleteFile df(0);
     KvStore kvStore(0, 50, false);
     kvStore.set("abc", "def");
     kvStore.set("abc", "cde");
@@ -56,7 +52,6 @@ TEST_CASE("KvStore set overwrite and get") {
 }
 
 TEST_CASE("KvStore get no exist") {
-    DeleteFile df(0);
     KvStore kvStore(0, 100, false);
     auto res = kvStore.get("abc");
     REQUIRE (res.status() == Result::Status::Error);
@@ -64,7 +59,6 @@ TEST_CASE("KvStore get no exist") {
 }
 
 TEST_CASE("KvStore set at capacity returns failure") {
-    DeleteFile df(0);
     KvStore kvStore(0, 50, false);
     int cap = LOAD_FACTOR * 50;
     for (int i = 0; i < cap; i++) {
@@ -78,7 +72,6 @@ TEST_CASE("KvStore set at capacity returns failure") {
 }
 
 TEST_CASE("KvStore del normal success") {
-    DeleteFile df(0);
     KvStore kvStore(0, 50, false);
     for (int i = 0; i < 10; i++) {
         kvStore.set(std::to_string(i), std::to_string(i));
@@ -89,7 +82,6 @@ TEST_CASE("KvStore del normal success") {
 }
 
 TEST_CASE("KvStore del no exist") {
-    DeleteFile df(0);
     KvStore kvStore(0, 50, false);
     for (int i = 0; i < 10; i++) {
         kvStore.set(std::to_string(i), std::to_string(i));
@@ -101,7 +93,6 @@ TEST_CASE("KvStore del no exist") {
 }
 
 TEST_CASE("KvStore multi-threading set") {
-    DeleteFile df(0);
     KvStore kvStore(0, 1000, false);
     constexpr int numThreads = 10;
     constexpr int numOps = 50;
@@ -125,7 +116,6 @@ TEST_CASE("KvStore multi-threading set") {
 }
 
 TEST_CASE("KvStore multi-threading get") {
-    DeleteFile df(0);
     KvStore kvStore(0, 1000, false);
 
     for (int i = 0; i < 500; i++) {

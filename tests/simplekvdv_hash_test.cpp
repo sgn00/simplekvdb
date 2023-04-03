@@ -6,7 +6,6 @@
 using namespace simplekvdb;
 
 TEST_CASE("HSET basic success test") {
-    DeleteFile df(20);
     KvStore kvStore(20, 100, false);
     auto res = kvStore.hset("hhh", {{"abc", "123"}, {"ghi", "456"}});
     REQUIRE (res.status() == Result::Status::OK);
@@ -14,7 +13,6 @@ TEST_CASE("HSET basic success test") {
 }
 
 TEST_CASE("HSET, HGET basic success test") {
-    DeleteFile df(20);
     KvStore kvStore(20, 100, false);
     kvStore.hset("hhh", {{"abc", "123"}, {"ghi", "456"}});
     auto res = kvStore.hget("hhh", "abc");
@@ -27,7 +25,6 @@ TEST_CASE("HSET, HGET basic success test") {
 }
 
 TEST_CASE("HSET, HDEL basic success test") {
-    DeleteFile df(20);
     KvStore kvStore(20, 100, false);
     kvStore.hset("hhh", {{"abc", "123"}, {"ghi", "456"}});
     auto res = kvStore.hdel("hhh", {"abc"});
@@ -36,7 +33,6 @@ TEST_CASE("HSET, HDEL basic success test") {
 }
 
 TEST_CASE("HSET, HDEL, HGET basic test") {
-    DeleteFile df(20);
     KvStore kvStore(20, 100, false);
     kvStore.hset("hhh", {{"abc", "123"}, {"ghi", "456"}});
     kvStore.hdel("hhh", {"abc"});
