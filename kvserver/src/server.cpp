@@ -26,7 +26,23 @@ void Server::bindFunctions() {
 
     server.bind("DEL", 
         [this](const std::string& key){ return del(key); }
-    );   
+    );
+
+    server.bind("HGET",
+        [this](const std::string& key, const std::string& field) { return hget(key, field); }
+    );
+
+    server.bind("HSET",
+        [this](const std::string& key, const std::vector<std::pair<std::string,std::string>>& fieldValuePairs) {
+            return hset(key, fieldValuePairs);
+        } 
+    );
+
+    server.bind("HDEL",
+        [this](const std::string& key, const std::vector<std::string>& fields) {
+            return hdel(key, fields);
+        }
+    );
 }
 
 CommResult Server::set(const std::string& key, const std::string& value) {
@@ -44,6 +60,24 @@ CommResult Server::get(const std::string& key) {
 CommResult Server::del(const std::string& key) {
     std::cout << "Del called: " << key << std::endl;
     auto res = kvStore.del(key);
+    return convertToCommResult(res);
+}
+
+CommResult Server::hget(const std::string& key, const std::string& field) {
+    std::cout << "HGET called: " << key << std::endl;
+    auto res = kvStore.hget(key, field);
+    return convertToCommResult(res);
+}
+
+CommResult Server::hset(const std::string& key, const std::vector<std::pair<std::string,std::string>>& fieldValuePairs) {
+    std::cout << "HSET called: " << key << std::endl;
+    auto res = kvStore.hset(key, fieldValuePairs);
+    return convertToCommResult(res);
+}
+
+CommResult Server::hdel(const std::string& key, const std::vector<std::string>& fields) {
+    std::cout << "HDEL called: " << key << std::endl;
+    auto res = kvStore.hdel(key, fields);
     return convertToCommResult(res);
 }
 

@@ -18,6 +18,12 @@ std::string Client::send(const tParseCommand& command) {
         return sendGet(std::get<GetCommand>(command));
     } else if (std::holds_alternative<DelCommand>(command)) {
         return sendDel(std::get<DelCommand>(command));
+    } else if (std::holds_alternative<HSetCommand>(command)) {
+        return sendHSet(std::get<HSetCommand>(command));  
+    } else if (std::holds_alternative<HDelCommand>(command)) {
+        return sendHDel(std::get<HDelCommand>(command));  
+    } else if (std::holds_alternative<HGetCommand>(command)) {
+        return sendHGet(std::get<HGetCommand>(command));  
     } else {
         // throw invalid command exception
     }
@@ -40,10 +46,14 @@ std::string Client::getErrorMessage(int errorCode) {
     }
 }
 
+bool Client::statusIsOK(int status) {
+    return status == static_cast<int>(simplekvdb::Result::Status::OK);
+}
+
 std::string Client::sendSet(const SetCommand& setCommand) {
     auto [status, errorCode, strResult, intResult] = client.call(SET, setCommand.key, setCommand.value).as<CommResult>();
 
-    if (status == static_cast<int>(simplekvdb::Result::Status::OK)) {
+    if (statusIsOK(status)) {
         return "OK";
     }
 
@@ -53,7 +63,7 @@ std::string Client::sendSet(const SetCommand& setCommand) {
 std::string Client::sendGet(const GetCommand& getCommand) {
     auto [status, errorCode, strResult, intResult] = client.call(GET, getCommand.key).as<CommResult>();
 
-    if (status == static_cast<int>(simplekvdb::Result::Status::OK)) {
+    if (statusIsOK(status)) {
         return "\"" + strResult + "\"";
     }
 
@@ -63,8 +73,37 @@ std::string Client::sendGet(const GetCommand& getCommand) {
 std::string Client::sendDel(const DelCommand& delCommand) {
     auto [status, errorCode, strResult, intResult] = client.call(DEL, delCommand.key).as<CommResult>();
 
-    if (status == static_cast<int>(simplekvdb::Result::Status::OK)) {
+    if (statusIsOK(status)) {
         return "(integer) " + std::to_string(intResult);
+    }
+
+    return getErrorMessage(errorCode);
+}
+
+std::string Client::sendHSet(const HSetCommand& hsetCommand) {
+    auto [status, errorCode, strResult, intResult] = client.call(HSET, hsetCommand.key, hsetCommand.fieldValuePairs).as<CommResult>();
+
+    if (statusIsOK(status)) {
+        return "(integer) " + std::to_string(intResult);
+    }
+
+    return getErrorMessage(errorCode);
+}
+
+std::string Client::sendHDel(const HDelCommand& hdelCommand) {
+    auto [status, errorCode, strResult, intResult] = client.call(HDEL, hdelCommand.key, hdelCommand.fields).as<CommResult>();
+
+    if (statusIsOK(status)) {
+        return "(integer) " + std::to_string(intResult);
+    }
+
+    return getErrorMessage(errorCode);
+}
+
+std::string Client::sendHGet(const HGetCommand& hgetCommand) {
+   auto [status, errorCode, strResult, intResult] = client.call(HGET, hgetCommand.key, hgetCommand.field).as<CommResult>(); 
+    if (statusIsOK(status)) {
+        return "\"" + strResult + "\"";
     }
 
     return getErrorMessage(errorCode);

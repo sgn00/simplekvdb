@@ -22,6 +22,12 @@ namespace kvclient {
 
         static DelCommand parseDel(const std::vector<std::string>& tokens);
 
+        static HSetCommand parseHSet(const std::vector<std::string>& tokens);
+
+        static HGetCommand parseHGet(const std::vector<std::string>& tokens);
+
+        static HDelCommand parseHDel(const std::vector<std::string>& tokens);
+
     };
 
     class InvalidCommandException : public std::runtime_error {

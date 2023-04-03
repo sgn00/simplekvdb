@@ -123,11 +123,10 @@ Result KvStore::hset(const std::string& key, const std::vector<std::pair<std::st
     for (auto& kv : bucket.data) {
         if (kv.first == key) {
             if (std::holds_alternative<std::unordered_map<std::string,std::string>>(kv.second)) {
-                std::unordered_map<std::string,std::string> umap;
+                auto& umap = std::get<std::unordered_map<std::string,std::string>>(kv.second);
                 for (const auto& [k,v] : fieldValuePairs) {
                     umap[k] = v;
                 }
-                kv.second = umap;
                 inserted = true;
                 break;
             } else {
@@ -193,9 +192,8 @@ Result KvStore::hdel(const std::string& key, const std::vector<std::string>& fie
                     // if (loggingEnabled) {
                     //     logWriter.value().log(aoflogging::stringifyDelCommand(key));
                     // }
-
-                    return Result{Result::Status::OK, count};
                 }
+                return Result{Result::Status::OK, count};
             } else {
                 return Result{Result::Status::Error, Result::ErrorCode::WrongType};
             }

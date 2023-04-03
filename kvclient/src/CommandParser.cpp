@@ -17,6 +17,12 @@ tParseCommand CommandParser::parseLine(const std::string& line) {
             return parseDel(tokens);
         } else if (command == GET) {
             return parseGet(tokens);
+        } else if (command == HSET) {
+            return parseHSet(tokens);
+        } else if (command == HGET) {
+            return parseHGet(tokens);
+        } else if (command == HDEL) {
+            return parseHDel(tokens);
         } else if (command == QUIT) {
             return QuitCommand{};
         } else {
@@ -87,4 +93,30 @@ DelCommand CommandParser::parseDel(const std::vector<std::string>& tokens) {
         throw InvalidCommandException("Invalid DEL command format. Format: DEL key");
     }
     return DelCommand{tokens[1]};  
+}
+
+HSetCommand CommandParser::parseHSet(const std::vector<std::string>& tokens) {
+    if (tokens.size() % 2 == 1 || tokens.size() < 4) {
+        throw InvalidCommandException("Invalid HSET command format. Format: HSET key field value [field value ...]");
+    }
+    std::vector<std::pair<std::string,std::string>> arg2;
+    int n = tokens.size();
+    for (int i = 2; i < n - 1; i++) {
+        arg2.push_back({tokens[i], tokens[i + 1]});
+    }
+    return HSetCommand{tokens[1], arg2};
+}
+
+HGetCommand CommandParser::parseHGet(const std::vector<std::string>& tokens) {
+    if (tokens.size() != 3) {
+        throw InvalidCommandException("Invalid HGET command format. Format: HGET key field");
+    }
+    return HGetCommand{tokens[1], tokens[2]};
+}
+
+HDelCommand CommandParser::parseHDel(const std::vector<std::string>& tokens) {
+    if (tokens.size() < 3) {
+        throw InvalidCommandException("Invalid HDEL command format. Format: HDEL key field [field ...]");
+    }
+    return HDelCommand{tokens[1], std::vector<std::string>(tokens.begin() + 2, tokens.end())};
 }

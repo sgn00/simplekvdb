@@ -37,6 +37,12 @@ private:
 
     CommResult del(const std::string& key);
 
+    CommResult hget(const std::string& key, const std::string& field);
+
+    CommResult hset(const std::string& key, const std::vector<std::pair<std::string,std::string>>& fieldValuePairs);
+
+    CommResult hdel(const std::string& key, const std::vector<std::string>& fields);
+
 };
 
 

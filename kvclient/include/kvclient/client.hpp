@@ -26,11 +26,19 @@ private:
 
     static std::string getErrorMessage(int errorCode);
 
+    static bool statusIsOK(int status);
+
     std::string sendSet(const SetCommand& setCommand);
 
     std::string sendGet(const GetCommand& getCommand);
 
     std::string sendDel(const DelCommand& delCommand);
+
+    std::string sendHSet(const HSetCommand& hsetCommand);
+
+    std::string sendHDel(const HDelCommand& hdelCommand);
+
+    std::string sendHGet(const HGetCommand& hgetCommand);
 
 };
 
