@@ -55,6 +55,11 @@ bool KvStore::isLoggingEnabled() {
 Result KvStore::set(const std::string& key, const std::string& value) {
     Bucket& bucket = getBucket(key);
     std::unique_lock lock(bucket.mutex);
+
+    if (loggingEnabled) {
+        logWriter.value().log(aoflogging::stringifySetCommand(key, value));
+    }
+
     bool inserted = false;
     for (auto& kv : bucket.data) {
         if (kv.first == key) {
@@ -62,10 +67,6 @@ Result KvStore::set(const std::string& key, const std::string& value) {
             inserted = true;
             break;
         }
-    }
-
-    if (loggingEnabled) {
-        logWriter.value().log(aoflogging::stringifySetCommand(key, value));
     }
 
     if (inserted) {
@@ -99,6 +100,10 @@ Result KvStore::del(const std::string& key) {
     Bucket& bucket = getBucket(key);
     std::unique_lock lock(bucket.mutex);
 
+    if (loggingEnabled) {
+        logWriter.value().log(aoflogging::stringifyDelCommand(key));
+    }
+
     auto initialSize = bucket.data.size();
     bucket.data.remove_if(
         [&key = key](const auto& kv) { 
@@ -109,16 +114,17 @@ Result KvStore::del(const std::string& key) {
     auto removedCount = initialSize - bucket.data.size();
     numElements -= removedCount;
 
-    if (loggingEnabled) {
-        logWriter.value().log(aoflogging::stringifyDelCommand(key));
-    }
-
     return Result{Result::Status::OK, static_cast<int>(removedCount)};
 }
 
 Result KvStore::hset(const std::string& key, const std::vector<std::pair<std::string,std::string>>& fieldValuePairs) {
     Bucket& bucket = getBucket(key);
     std::unique_lock lock(bucket.mutex);
+
+    if (loggingEnabled) {
+        logWriter.value().log(aoflogging::stringifyHSetCommand(key, fieldValuePairs));
+    }
+
     bool inserted = false;
     for (auto& kv : bucket.data) {
         if (kv.first == key) {
@@ -134,10 +140,6 @@ Result KvStore::hset(const std::string& key, const std::vector<std::pair<std::st
             }
         }
     }
-
-    // if (loggingEnabled) {
-    //     logWriter.value().log(aoflogging::stringifySetCommand(key, value));
-    // }
 
     if (inserted) {
         return Result{Result::Status::OK, static_cast<int>(fieldValuePairs.size())};
@@ -179,6 +181,10 @@ Result KvStore::hdel(const std::string& key, const std::vector<std::string>& fie
     Bucket& bucket = getBucket(key);
     std::unique_lock lock(bucket.mutex);
 
+    if (loggingEnabled) {
+        logWriter.value().log(aoflogging::stringifyHDelCommand(key, fields));
+    }
+
     for (auto& kv : bucket.data) {
         if (kv.first == key) {
             if (std::holds_alternative<std::unordered_map<std::string,std::string>>(kv.second)) {
@@ -188,10 +194,6 @@ Result KvStore::hdel(const std::string& key, const std::vector<std::string>& fie
                     if (umap.erase(field)) {
                         ++count;
                     }
-
-                    // if (loggingEnabled) {
-                    //     logWriter.value().log(aoflogging::stringifyDelCommand(key));
-                    // }
                 }
                 return Result{Result::Status::OK, count};
             } else {
