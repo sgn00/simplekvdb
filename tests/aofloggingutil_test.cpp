@@ -19,6 +19,16 @@ TEST_CASE("Test delCommand multiple keys") {
     REQUIRE(res == "DEL|3|abc|3|def|2|gh");
 }
 
+TEST_CASE("Test hsetCommand") {
+    auto res = aoflogging::stringifyHSetCommand("abc", {{"123", "456"}, {"xyza", "1"}});
+    REQUIRE (res == "HSET|3|abc|3|123|3|456|4|xyza|1|1");
+}
+
+TEST_CASE("Test hdelCommand") {
+    auto res = aoflogging::stringifyHDelCommand("abc", {"123", "xyza"});
+    REQUIRE (res == "HDEL|3|abc|3|123|4|xyza");
+}
+
 TEST_CASE("Test getFileName") {
     auto res = aoflogging::getFileName(1);
     REQUIRE(res == "simplekvdb_1.store");
