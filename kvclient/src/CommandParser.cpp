@@ -101,7 +101,7 @@ HSetCommand CommandParser::parseHSet(const std::vector<std::string>& tokens) {
     }
     std::vector<std::pair<std::string,std::string>> arg2;
     int n = tokens.size();
-    for (int i = 2; i < n - 1; i++) {
+    for (int i = 2; i < n - 1; i+=2) {
         arg2.push_back({tokens[i], tokens[i + 1]});
     }
     return HSetCommand{tokens[1], arg2};
