@@ -25,7 +25,7 @@ void Server::bindFunctions() {
     ); 
 
     server.bind("DEL", 
-        [this](const std::string& key){ return del(key); }
+        [this](const std::vector<std::string>& keys){ return del(keys); }
     );
 
     server.bind("HGET",
@@ -57,9 +57,13 @@ CommResult Server::get(const std::string& key) {
     return convertToCommResult(res);
 }
 
-CommResult Server::del(const std::string& key) {
-    std::cout << "Del called: " << key << std::endl;
-    auto res = kvStore.del(key);
+CommResult Server::del(const std::vector<std::string>& keys) {
+    std::cout << "Del called: ";
+    for (const auto& k : keys) {
+        std::cout << k << ", ";
+    }
+    std::cout << std::endl;
+    auto res = kvStore.del(keys);
     return convertToCommResult(res);
 }
 

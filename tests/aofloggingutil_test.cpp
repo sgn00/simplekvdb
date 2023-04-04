@@ -10,8 +10,13 @@ TEST_CASE("Test setCommand") {
 }
 
 TEST_CASE("Test delCommand") {
-    auto res = aoflogging::stringifyDelCommand("abc");
+    auto res = aoflogging::stringifyDelCommand({"abc"});
     REQUIRE(res == "DEL|3|abc");
+}
+
+TEST_CASE("Test delCommand multiple keys") {
+    auto res = aoflogging::stringifyDelCommand({"abc", "def", "gh"});
+    REQUIRE(res == "DEL|3|abc|3|def|2|gh");
 }
 
 TEST_CASE("Test getFileName") {

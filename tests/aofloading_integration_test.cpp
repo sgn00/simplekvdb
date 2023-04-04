@@ -18,7 +18,7 @@ TEST_CASE("Log, Load and Parse Test 1") {
             kvStore.get(std::to_string(i));
         }
         for (int i = 0; i < 5; i++) {
-            kvStore.del(std::to_string(i));
+            kvStore.del({std::to_string(i)});
         }
     }
 

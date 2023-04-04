@@ -20,7 +20,7 @@ double test_function(KvStore& kvStore, int thread_id) {
         kvStore.set(key, std::to_string(i));
         int value;
         kvStore.get(key);
-        kvStore.del(key);
+        kvStore.del({key});
     }
 
     auto end = std::chrono::high_resolution_clock::now();

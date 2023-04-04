@@ -71,7 +71,7 @@ public:
 
     Result get(const std::string& key) const;
 
-    Result del(const std::string& key);
+    Result del(const std::vector<std::string>& keys);
 
     Result hset(const std::string& key, const std::vector<std::pair<std::string,std::string>>& fieldValuePairs);
 

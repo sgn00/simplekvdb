@@ -71,19 +71,23 @@ simplekvdb::SetCommand AOFParser::parseSetCommand(const std::string& line, size_
 }
 
 simplekvdb::DelCommand AOFParser::parseDelCommand(const std::string& line, size_t& pos) {
-    std::string key;
-    int keyLength;
+    std::vector<std::string> keys;
+    while (pos < line.size()) {
+        int elementLength;
+        std::string element;
+        if (!extractLength(line, pos, elementLength)) {
+            throw AOFParseException("Could not extract key length in DEL command");
+        }
+        pos++;  // Skip '|'
 
-    if (!extractLength(line, pos, keyLength)) {
-        throw AOFParseException("Could not extract key length in DEL command");
+        if (!extractElement(line, pos, elementLength, element)) {
+            throw AOFParseException("Could not extract key value in DEL command");
+        }
+        pos++; // Skip '|'
+
+        keys.push_back(element);       
     }
-    pos++;  // Skip '|'
-
-    if (!extractElement(line, pos, keyLength, key)) {
-        throw AOFParseException("Could not extract key in DEL command");
-    }
-
-    return {key};
+    return DelCommand{keys};
 }
 
 simplekvdb::HDelCommand AOFParser::parseHDelCommand(const std::string& line, size_t& pos) {

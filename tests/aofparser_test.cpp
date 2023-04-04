@@ -14,7 +14,15 @@ TEST_CASE("Test parse set command") {
 TEST_CASE("Test parse del command") {
     std::string line {"DEL|8|12345678"};
     auto res = std::get<simplekvdb::DelCommand>(AOFParser::parseLine(line));
-    REQUIRE (res.key == "12345678");
+    REQUIRE (res.keys[0] == "12345678");
+}
+
+TEST_CASE("Test parse del command multiple keys") {
+    std::string line {"DEL|11|12345678901|2|ab|4|1234"};
+    auto res = std::get<simplekvdb::DelCommand>(AOFParser::parseLine(line));
+    REQUIRE (res.keys[0] == "12345678901");
+    REQUIRE (res.keys[1] == "ab");
+    REQUIRE (res.keys[2] == "1234");
 }
 
 TEST_CASE("Test parse hdel command") {

@@ -89,10 +89,10 @@ GetCommand CommandParser::parseGet(const std::vector<std::string>& tokens) {
 }
 
 DelCommand CommandParser::parseDel(const std::vector<std::string>& tokens) {
-    if (tokens.size() != 2) {
-        throw InvalidCommandException("Invalid DEL command format. Format: DEL key");
+    if (tokens.size() == 1) {
+        throw InvalidCommandException("Invalid DEL command format. Format: DEL key [key ...]");
     }
-    return DelCommand{tokens[1]};  
+    return DelCommand{std::vector<std::string>(tokens.begin() + 1, tokens.end())};  
 }
 
 HSetCommand CommandParser::parseHSet(const std::vector<std::string>& tokens) {

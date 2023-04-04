@@ -71,7 +71,7 @@ std::string Client::sendGet(const GetCommand& getCommand) {
 }
 
 std::string Client::sendDel(const DelCommand& delCommand) {
-    auto [status, errorCode, strResult, intResult] = client.call(DEL, delCommand.key).as<CommResult>();
+    auto [status, errorCode, strResult, intResult] = client.call(DEL, delCommand.keys).as<CommResult>();
 
     if (statusIsOK(status)) {
         return "(integer) " + std::to_string(intResult);

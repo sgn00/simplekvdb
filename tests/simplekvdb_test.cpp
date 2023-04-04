@@ -76,7 +76,7 @@ TEST_CASE("KvStore del normal success") {
     for (int i = 0; i < 10; i++) {
         kvStore.set(std::to_string(i), std::to_string(i));
     }
-    auto res = kvStore.del("5");
+    auto res = kvStore.del({"5"});
     REQUIRE (res.status() == Result::Status::OK);
     REQUIRE (kvStore.size() == 9);
 }
@@ -86,7 +86,7 @@ TEST_CASE("KvStore del no exist") {
     for (int i = 0; i < 10; i++) {
         kvStore.set(std::to_string(i), std::to_string(i));
     }
-    auto res = kvStore.del("20");
+    auto res = kvStore.del({"20"});
     REQUIRE (res.status() == Result::Status::OK);
     REQUIRE (res.value<int>() == 0);
     REQUIRE (kvStore.size() == 10);
@@ -127,7 +127,7 @@ TEST_CASE("KvStore multi-threading get") {
 
     auto eraseOp = [&kvStore](int start) {
         for (int i = 0; i < numOps; ++i) {
-            kvStore.del(std::to_string(i + start));
+            kvStore.del({std::to_string(i + start)});
         }
     };
 

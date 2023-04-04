@@ -11,7 +11,7 @@ namespace simplekvdb {
     };
 
     struct DelCommand {
-        std::string key;
+        std::vector<std::string> keys;
     };
 
     struct HSetCommand {

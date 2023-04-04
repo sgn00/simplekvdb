@@ -12,7 +12,7 @@ void aoflogging::AOFLoader::execute(KvStore& kvStore, tCommand command) {
         kvStore.set(c.key, c.value);
     } else if (std::holds_alternative<DelCommand>(command)) {
         auto c = std::get<DelCommand>(command);
-        kvStore.del(c.key);
+        kvStore.del(c.keys);
     } else if (std::holds_alternative<HDelCommand>(command)) {
         auto c = std::get<HDelCommand>(command);
         kvStore.hdel(c.key, c.fields);

@@ -96,27 +96,30 @@ Result KvStore::get(const std::string& key) const {
     return Result{Result::Status::Error, Result::ErrorCode::KeyNotFound};
 }
 
-Result KvStore::del(const std::string& key) {
-    Bucket& bucket = getBucket(key);
-    std::unique_lock lock(bucket.mutex);
+Result KvStore::del(const std::vector<std::string>& keys) {
+    int removedCount = 0;
 
-    if (loggingEnabled) {
-        logWriter.value().log(aoflogging::stringifyDelCommand(key));
+    for (const auto& key : keys) {
+        Bucket& bucket = getBucket(key);
+        std::unique_lock lock(bucket.mutex);
+
+        if (loggingEnabled) {
+            logWriter.value().log(aoflogging::stringifyDelCommand(keys));
+        }
+
+        auto initialSize = bucket.data.size();
+        bucket.data.remove_if(
+            [&key](const auto& kv) {
+                return kv.first == key;
+            }
+        );
+
+        removedCount += initialSize - bucket.data.size();
+        numElements -= initialSize - bucket.data.size();
     }
 
-    auto initialSize = bucket.data.size();
-    bucket.data.remove_if(
-        [&key = key](const auto& kv) { 
-            return kv.first == key; 
-        }
-    );
-
-    auto removedCount = initialSize - bucket.data.size();
-    numElements -= removedCount;
-
-    return Result{Result::Status::OK, static_cast<int>(removedCount)};
+    return Result{Result::Status::OK, removedCount};
 }
-
 Result KvStore::hset(const std::string& key, const std::vector<std::pair<std::string,std::string>>& fieldValuePairs) {
     Bucket& bucket = getBucket(key);
     std::unique_lock lock(bucket.mutex);

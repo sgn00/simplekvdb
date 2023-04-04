@@ -11,9 +11,16 @@ namespace simplekvdb {
             return SET + DELIM + std::to_string(key.size()) + DELIM + key + DELIM + std::to_string(value.size()) + DELIM + value;
         }
 
-        // COMMAND|XX|KEY
-        std::string stringifyDelCommand(const std::string& key) {
-            return DEL + DELIM + std::to_string(key.size()) + DELIM + key;
+        // COMMAND|XX|KEY|...
+        std::string stringifyDelCommand(const std::vector<std::string>& keys) {
+            std::string res = DEL;
+            for (const auto& k : keys) {
+                res.append(DELIM);
+                res.append(std::to_string(k.size()));
+                res.append(DELIM);
+                res.append(k);
+            }
+            return res;
         }
 
         // HSET|XX|KEY|XX|FIELD1|XX|VALUE1|XX|FIELD2|XX|VALUE2

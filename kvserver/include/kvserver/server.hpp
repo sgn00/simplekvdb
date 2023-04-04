@@ -35,7 +35,7 @@ private:
 
     CommResult get(const std::string& key);
 
-    CommResult del(const std::string& key);
+    CommResult del(const std::vector<std::string>& keys);
 
     CommResult hget(const std::string& key, const std::string& field);
 
