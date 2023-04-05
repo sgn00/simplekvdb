@@ -1,4 +1,6 @@
 #include <string>
+#include <fmt/core.h>
+#include <fmt/ranges.h>
 
 #include "simplekvdb/LoggingUtil.hpp"
 
@@ -8,53 +10,49 @@ namespace simplekvdb {
 
         // COMMAND|XX|KEY|XX|VALUE
         std::string stringifySetCommand(const std::string& key, const std::string& value) {
-            return SET + DELIM + std::to_string(key.size()) + DELIM + key + DELIM + std::to_string(value.size()) + DELIM + value;
+            return fmt::format("{}{}{}{}{}{}{}{}{}", SET, DELIM, key.size(), DELIM, key, DELIM, value.size(), DELIM, value);
         }
 
         // COMMAND|XX|KEY|...
         std::string stringifyDelCommand(const std::vector<std::string>& keys) {
-            std::string res = DEL;
+            fmt::memory_buffer buffer;
+            fmt::format_to(std::back_inserter(buffer), "{}", DEL);
+
             for (const auto& k : keys) {
-                res.append(DELIM);
-                res.append(std::to_string(k.size()));
-                res.append(DELIM);
-                res.append(k);
+                fmt::format_to(std::back_inserter(buffer), "{}{}{}{}", DELIM, k.size(), DELIM, k);
             }
-            return res;
+
+            return fmt::to_string(buffer);
         }
 
         // HSET|XX|KEY|XX|FIELD1|XX|VALUE1|XX|FIELD2|XX|VALUE2
         std::string stringifyHSetCommand(const std::string& key, const std::vector<std::pair<std::string,std::string>>& fieldValuePairs) {
-            std::string firstPart = HSET + DELIM + std::to_string(key.size()) + DELIM + key;
-            std::string secondPart{};
+            fmt::memory_buffer buffer;
+            fmt::format_to(std::back_inserter(buffer), "{}{}{}{}{}", HSET, DELIM, key.size(), DELIM, key);
+
             for (const auto& p : fieldValuePairs) {
-                secondPart.append(DELIM);
-                secondPart.append(std::to_string(p.first.size()));
-                secondPart.append(DELIM);
-                secondPart.append(p.first);
-                secondPart.append(DELIM);
-                secondPart.append(std::to_string(p.second.size()));
-                secondPart.append(DELIM);
-                secondPart.append(p.second);
+                fmt::format_to(std::back_inserter(buffer), "{}{}{}{}{}{}{}{}", DELIM, p.first.size(), DELIM, p.first, 
+                DELIM, p.second.size(), DELIM, p.second);
             }
-            return firstPart + secondPart;
+
+            return fmt::to_string(buffer);
         }
+
 
         // HDEL|XX|KEY|XX|FIELD1|XX|FIELD2
         std::string stringifyHDelCommand(const std::string& key, const std::vector<std::string>& fields) {
-            std::string firstPart = HDEL + DELIM + std::to_string(key.size()) + DELIM + key;
-            std::string secondPart{};
+            fmt::memory_buffer buffer;
+            fmt::format_to(std::back_inserter(buffer), "{}{}{}{}{}", HDEL, DELIM, key.size(), DELIM, key);
+
             for (const auto& f : fields) {
-                secondPart.append(DELIM);
-                secondPart.append(std::to_string(f.size()));
-                secondPart.append(DELIM);
-                secondPart.append(f);
+                fmt::format_to(std::back_inserter(buffer), "{}{}{}{}", DELIM, f.size(), DELIM, f);
             }
-            return firstPart + secondPart;
+
+            return fmt::to_string(buffer);
         }
 
         std::string getFileName(int DB_IDENTIFIER) {
-            return "simplekvdb_" + std::to_string(DB_IDENTIFIER) + ".store";
+            return fmt::format("simplekvdb_{}.store", DB_IDENTIFIER);
         }
 
     }

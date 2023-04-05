@@ -1,17 +1,17 @@
 #include "kvserver/server.hpp"
 #include "simplekvdb/AOFLoader.hpp"
-#include <iostream>
+#include <fmt/ranges.h>
 
 using namespace kvserver;
 
 Server::Server(int port, bool loggingEnabled) : port(port), kvStore(DB_IDENTIFIER, size, loggingEnabled), server(port) {
-    std::cout << "Using port: " << port << std::endl;
-    std::cout << "Logging enabled: " << (loggingEnabled ? "true" : "false") << std::endl;
+    fmt::print("Using port: {}\n", port);
+    fmt::print("Logging enabled: {}\n", loggingEnabled ? "true" : "false");
 }
 
 void Server::start() {
     bindFunctions();
-    std::cout << "Running server..." << std::endl;
+    fmt::print("Running server...\n");
     server.run();
 }
 
@@ -46,41 +46,37 @@ void Server::bindFunctions() {
 }
 
 CommResult Server::set(const std::string& key, const std::string& value) {
-    std::cout << "Set called: " << key << "," << value << std::endl; 
+    fmt::print("SET called: {},{}\n", key, value);
     auto res = kvStore.set(key, value);
     return convertToCommResult(res);
 }
 
 CommResult Server::get(const std::string& key) {
-    std::cout << "Get called: " << key << std::endl;
+    fmt::print("GET called: {}\n", key);
     auto res = kvStore.get(key);
     return convertToCommResult(res);
 }
 
 CommResult Server::del(const std::vector<std::string>& keys) {
-    std::cout << "Del called: ";
-    for (const auto& k : keys) {
-        std::cout << k << ", ";
-    }
-    std::cout << std::endl;
+    fmt::print("DEL called: {}\n", keys);
     auto res = kvStore.del(keys);
     return convertToCommResult(res);
 }
 
 CommResult Server::hget(const std::string& key, const std::string& field) {
-    std::cout << "HGET called: " << key << std::endl;
+    fmt::print("HGET called: {}\n", key);
     auto res = kvStore.hget(key, field);
     return convertToCommResult(res);
 }
 
 CommResult Server::hset(const std::string& key, const std::vector<std::pair<std::string,std::string>>& fieldValuePairs) {
-    std::cout << "HSET called: " << key << std::endl;
+    fmt::print("HSET called: {}\n", key);
     auto res = kvStore.hset(key, fieldValuePairs);
     return convertToCommResult(res);
 }
 
 CommResult Server::hdel(const std::string& key, const std::vector<std::string>& fields) {
-    std::cout << "HDEL called: " << key << std::endl;
+    fmt::print("HDEL called: {}\n", key);
     auto res = kvStore.hdel(key, fields);
     return convertToCommResult(res);
 }

@@ -1,5 +1,6 @@
 #include "kvclient/client.hpp"
 #include "simplekvdb/Result.hpp"
+#include <fmt/ranges.h>
 
 using namespace kvclient;
 using namespace simplekvdb;
@@ -64,7 +65,7 @@ std::string Client::sendGet(const GetCommand& getCommand) {
     auto [status, errorCode, strResult, intResult] = client.call(GET, getCommand.key).as<CommResult>();
 
     if (statusIsOK(status)) {
-        return "\"" + strResult + "\"";
+        return fmt::format("\"{}\"", strResult);
     }
 
     return getErrorMessage(errorCode);
@@ -74,7 +75,7 @@ std::string Client::sendDel(const DelCommand& delCommand) {
     auto [status, errorCode, strResult, intResult] = client.call(DEL, delCommand.keys).as<CommResult>();
 
     if (statusIsOK(status)) {
-        return "(integer) " + std::to_string(intResult);
+        return fmt::format("(integer) {}", intResult);
     }
 
     return getErrorMessage(errorCode);
@@ -84,7 +85,7 @@ std::string Client::sendHSet(const HSetCommand& hsetCommand) {
     auto [status, errorCode, strResult, intResult] = client.call(HSET, hsetCommand.key, hsetCommand.fieldValuePairs).as<CommResult>();
 
     if (statusIsOK(status)) {
-        return "(integer) " + std::to_string(intResult);
+        return fmt::format("(integer) {}", intResult);
     }
 
     return getErrorMessage(errorCode);
@@ -94,7 +95,7 @@ std::string Client::sendHDel(const HDelCommand& hdelCommand) {
     auto [status, errorCode, strResult, intResult] = client.call(HDEL, hdelCommand.key, hdelCommand.fields).as<CommResult>();
 
     if (statusIsOK(status)) {
-        return "(integer) " + std::to_string(intResult);
+        return fmt::format("(integer) {}", intResult);
     }
 
     return getErrorMessage(errorCode);
@@ -103,7 +104,7 @@ std::string Client::sendHDel(const HDelCommand& hdelCommand) {
 std::string Client::sendHGet(const HGetCommand& hgetCommand) {
    auto [status, errorCode, strResult, intResult] = client.call(HGET, hgetCommand.key, hgetCommand.field).as<CommResult>(); 
     if (statusIsOK(status)) {
-        return "\"" + strResult + "\"";
+        return fmt::format("\"{}\"", strResult);
     }
 
     return getErrorMessage(errorCode);

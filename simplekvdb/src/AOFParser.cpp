@@ -1,10 +1,6 @@
 #include "simplekvdb/AOFParser.hpp"
 #include "simplekvdb/LoggingUtil.hpp"
 
-#include <iostream>
-
-using namespace std;
-
 using namespace simplekvdb::aoflogging;
 
 bool AOFParser::extractElement(const std::string& line, size_t& pos, int length, std::string& output) {

@@ -2,7 +2,7 @@
 #include "simplekvdb/AOFParser.hpp"
 #include "simplekvdb/LoggingUtil.hpp"
 #include <fstream>
-#include <iostream>
+#include <fmt/core.h>
 
 using namespace simplekvdb;
 
@@ -45,7 +45,7 @@ bool aoflogging::AOFLoader::loadAndExecute(KvStore& kvStore) {
             simplekvdb::tCommand command = parser.parseLine(line);
             execute(kvStore, command);
         } catch (const AOFParseException& e) {
-            std::cerr << "AOFParseException at line " << lineNumber << ": " << e.what() << std::endl;
+            fmt::print(stderr, "AOFParseException at line {}: {}\n", lineNumber, e.what());
         }
     }
 
