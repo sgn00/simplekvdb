@@ -26,7 +26,7 @@ std::string Client::send(const TParseCommand &command) {
   } else if (std::holds_alternative<HGetCommand>(command)) {
     return sendHGet(std::get<HGetCommand>(command));
   } else {
-    // throw invalid command exception
+    throw UnknownCommandException("Unknown command received");
   }
 }
 

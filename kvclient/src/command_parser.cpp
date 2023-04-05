@@ -52,7 +52,7 @@ std::vector<std::string> CommandParser::parseTokens(const std::string &line) {
     if (c == '\\') {
       if (in_quotes &&
           (iss.peek() == '"' || iss.peek() == '\'' || iss.peek() == '\\')) {
-        iss.get(c);  // Consume the next character
+        iss.get(c);
       } else if (in_quotes) {
         throw InvalidCommandException("ERR syntax error");
       }

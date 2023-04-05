@@ -37,4 +37,10 @@ class Client {
   std::string sendHGet(const HGetCommand &hgetCommand);
 };
 
+class UnknownCommandException : public std::runtime_error {
+ public:
+  explicit UnknownCommandException(const std::string &message)
+      : std::runtime_error(message) {}
+};
+
 }  // namespace kvclient
