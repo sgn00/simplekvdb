@@ -16,7 +16,9 @@ KvStore::KvStore(int ident, size_t numBuckets, bool loggingEnabled)
   aoflogging::AofLoader::loadAndExecute(*this);
 }
 
-size_t KvStore::size() const { return static_cast<size_t>(numElements); }
+size_t KvStore::size() const {
+  return static_cast<size_t>(numElements.load(std::memory_order_acquire));
+}
 
 size_t KvStore::capacity() const { return MAX_NUM_ELEMENTS; }
 
@@ -32,7 +34,9 @@ const KvStore::Bucket &KvStore::getBucket(const std::string &key) const {
   return buckets[index];
 }
 
-bool KvStore::isFull() const { return numElements >= MAX_NUM_ELEMENTS; }
+bool KvStore::isFull() const {
+  return numElements.load(std::memory_order_acquire) >= MAX_NUM_ELEMENTS;
+}
 
 void KvStore::setLoggingEnabled(bool enabled) { loggingEnabled = enabled; }
 
@@ -59,7 +63,7 @@ Result KvStore::set(const std::string &key, const std::string &value) {
     return Result{Result::Status::OK};
   } else if (!isFull()) {
     bucket.data.emplace_back(key, value);
-    ++numElements;
+    numElements.fetch_add(1, std::memory_order_release);
     return Result{Result::Status::OK};
   } else {
     return Result{Result::Status::Error, Result::ErrorCode::DBFull};
@@ -85,19 +89,20 @@ Result KvStore::get(const std::string &key) const {
 Result KvStore::del(const std::vector<std::string> &keys) {
   int removedCount = 0;
 
+  if (loggingEnabled) {
+    logWriter.value().log(aoflogging::stringifyDelCommand(keys));
+  }
+
   for (const auto &key : keys) {
     Bucket &bucket = getBucket(key);
     std::unique_lock lock(bucket.mutex);
-
-    if (loggingEnabled) {
-      logWriter.value().log(aoflogging::stringifyDelCommand(keys));
-    }
 
     auto initialSize = bucket.data.size();
     bucket.data.remove_if([&key](const auto &kv) { return kv.first == key; });
 
     removedCount += initialSize - bucket.data.size();
-    numElements -= initialSize - bucket.data.size();
+    numElements.fetch_sub(initialSize - bucket.data.size(),
+                          std::memory_order_release);
   }
 
   return Result{Result::Status::OK, removedCount};
@@ -139,7 +144,7 @@ Result KvStore::hset(
       umap[k] = v;
     }
     bucket.data.emplace_back(key, umap);
-    ++numElements;
+    numElements.fetch_add(1, std::memory_order_release);
     return Result{Result::Status::OK, static_cast<int>(fieldValuePairs.size())};
   } else {
     return Result{Result::Status::Error, Result::ErrorCode::DBFull};
