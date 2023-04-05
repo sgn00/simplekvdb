@@ -15,7 +15,7 @@
 namespace simplekvdb {
 
 namespace aoflogging {
-class AOFLoader;
+class AofLoader;
 }
 
 using TValueVariant =
@@ -51,7 +51,7 @@ class KvStore {
 
   void setLoggingEnabled(bool enabled);
 
-  friend class aoflogging::AOFLoader;
+  friend class aoflogging::AofLoader;
 
  public:
   explicit KvStore(int ident, size_t numBuckets, bool loggingEnabled);

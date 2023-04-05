@@ -4,8 +4,8 @@
 #include <optional>
 #include <string>
 
+#include "kvclient/Client.hpp"
 #include "kvclient/CommandParser.hpp"
-#include "kvclient/client.hpp"
 
 int main(int argc, char *argv[]) {
   if (argc != 3) {
@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
   fmt::print("> ");
   while (std::getline(std::cin, input)) {
     try {
-      kvclient::tParseCommand command =
+      kvclient::TParseCommand command =
           kvclient::CommandParser::parseLine(input);
       if (std::holds_alternative<kvclient::QuitCommand>(command)) {
         fmt::print("OK\n");

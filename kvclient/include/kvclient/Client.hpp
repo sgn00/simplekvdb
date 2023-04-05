@@ -1,4 +1,5 @@
 #pragma once
+
 #include <string>
 
 #include "kvclient/Command.hpp"
@@ -10,7 +11,7 @@ class Client {
  public:
   Client(const std::string &serverIP, int port);
 
-  std::string send(const tParseCommand &command);
+  std::string send(const TParseCommand &command);
 
  private:
   const std::string serverIP;
@@ -21,7 +22,7 @@ class Client {
 
   static std::string getErrorMessage(int errorCode);
 
-  static bool statusIsOK(int status);
+  static bool statusIsOk(int status);
 
   std::string sendSet(const SetCommand &setCommand);
 

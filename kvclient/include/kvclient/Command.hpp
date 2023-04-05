@@ -43,7 +43,7 @@ struct HDelCommand {
 
 struct QuitCommand {};
 
-using tParseCommand =
+using TParseCommand =
     std::variant<SetCommand, DelCommand, GetCommand, HSetCommand, HGetCommand,
                  HDelCommand, QuitCommand>;
 }  // namespace kvclient

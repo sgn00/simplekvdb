@@ -8,7 +8,7 @@ namespace kvclient {
 
 class CommandParser {
  public:
-  static tParseCommand parseLine(const std::string &line);
+  static TParseCommand parseLine(const std::string &line);
 
  private:
   static std::vector<std::string> parseTokens(const std::string &line);

@@ -2,7 +2,7 @@
 
 using namespace kvclient;
 
-tParseCommand CommandParser::parseLine(const std::string &line) {
+TParseCommand CommandParser::parseLine(const std::string &line) {
   std::vector<std::string> tokens = parseTokens(line);
 
   if (tokens.size() == 0) {

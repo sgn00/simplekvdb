@@ -20,12 +20,12 @@ std::string stringifySetCommand(const std::string& key,
 std::string stringifyDelCommand(const std::vector<std::string>& keys);
 
 // HSET|XX|KEY|XX|FIELD1|XX|VALUE1|XX|FIELD2|XX|VALUE2
-std::string stringifyHSetCommand(
+std::string stringifyHsetCommand(
     const std::string& key,
     const std::vector<std::pair<std::string, std::string>>& fieldValuePairs);
 
 // HDEL|XX|KEY|XX|FIELD1|XX|FIELD2
-std::string stringifyHDelCommand(const std::string& key,
+std::string stringifyHdelCommand(const std::string& key,
                                  const std::vector<std::string>& fields);
 
 std::string getFileName(int DB_IDENTIFIER);

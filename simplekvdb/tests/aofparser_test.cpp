@@ -1,4 +1,4 @@
-#include "simplekvdb/AOFParser.hpp"
+#include "simplekvdb/AofParser.hpp"
 
 #include <catch2/catch.hpp>
 
@@ -6,20 +6,20 @@ using namespace simplekvdb::aoflogging;
 
 TEST_CASE("Test parse set command") {
   std::string line{"SET|4|abcd|5|12345"};
-  auto res = std::get<simplekvdb::SetCommand>(AOFParser::parseLine(line));
+  auto res = std::get<simplekvdb::SetCommand>(AofParser::parseLine(line));
   REQUIRE(res.key == "abcd");
   REQUIRE(res.value == "12345");
 }
 
 TEST_CASE("Test parse del command") {
   std::string line{"DEL|8|12345678"};
-  auto res = std::get<simplekvdb::DelCommand>(AOFParser::parseLine(line));
+  auto res = std::get<simplekvdb::DelCommand>(AofParser::parseLine(line));
   REQUIRE(res.keys[0] == "12345678");
 }
 
 TEST_CASE("Test parse del command multiple keys") {
   std::string line{"DEL|11|12345678901|2|ab|4|1234"};
-  auto res = std::get<simplekvdb::DelCommand>(AOFParser::parseLine(line));
+  auto res = std::get<simplekvdb::DelCommand>(AofParser::parseLine(line));
   REQUIRE(res.keys[0] == "12345678901");
   REQUIRE(res.keys[1] == "ab");
   REQUIRE(res.keys[2] == "1234");
@@ -27,7 +27,7 @@ TEST_CASE("Test parse del command multiple keys") {
 
 TEST_CASE("Test parse hdel command") {
   std::string line{"HDEL|4|abcd|2|ab|3|123"};
-  auto res = std::get<simplekvdb::HDelCommand>(AOFParser::parseLine(line));
+  auto res = std::get<simplekvdb::HDelCommand>(AofParser::parseLine(line));
   REQUIRE(res.key == "abcd");
   REQUIRE(res.fields[0] == "ab");
   REQUIRE(res.fields[1] == "123");
@@ -35,7 +35,7 @@ TEST_CASE("Test parse hdel command") {
 
 TEST_CASE("Test parse hset command") {
   std::string line{"HSET|4|abcd|2|ab|3|123|10|1234567890|1|1"};
-  auto res = std::get<simplekvdb::HSetCommand>(AOFParser::parseLine(line));
+  auto res = std::get<simplekvdb::HSetCommand>(AofParser::parseLine(line));
   REQUIRE(res.key == "abcd");
   REQUIRE(res.fieldValuePairs[0].first == "ab");
   REQUIRE(res.fieldValuePairs[0].second == "123");

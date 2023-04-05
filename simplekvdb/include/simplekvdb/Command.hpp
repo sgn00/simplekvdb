@@ -24,6 +24,6 @@ struct HDelCommand {
   std::vector<std::string> fields;
 };
 
-using tCommand = std::variant<simplekvdb::SetCommand, simplekvdb::DelCommand,
+using TCommand = std::variant<simplekvdb::SetCommand, simplekvdb::DelCommand,
                               simplekvdb::HSetCommand, simplekvdb::HDelCommand>;
 }  // namespace simplekvdb

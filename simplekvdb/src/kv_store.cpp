@@ -1,6 +1,5 @@
+#include "simplekvdb/AofLoader.hpp"
 #include "simplekvdb/KvStore.hpp"
-
-#include "simplekvdb/AOFLoader.hpp"
 #include "simplekvdb/LoggingUtil.hpp"
 
 using namespace simplekvdb;
@@ -14,7 +13,7 @@ KvStore::KvStore(int ident, size_t numBuckets, bool loggingEnabled)
     logWriter.emplace(aoflogging::getFileName(DB_IDENTIFIER));
   }
 
-  aoflogging::AOFLoader::loadAndExecute(*this);
+  aoflogging::AofLoader::loadAndExecute(*this);
 }
 
 size_t KvStore::size() const { return static_cast<size_t>(numElements); }
@@ -111,7 +110,7 @@ Result KvStore::hset(
 
   if (loggingEnabled) {
     logWriter.value().log(
-        aoflogging::stringifyHSetCommand(key, fieldValuePairs));
+        aoflogging::stringifyHsetCommand(key, fieldValuePairs));
   }
 
   bool inserted = false;
@@ -177,7 +176,7 @@ Result KvStore::hdel(const std::string &key,
   std::unique_lock lock(bucket.mutex);
 
   if (loggingEnabled) {
-    logWriter.value().log(aoflogging::stringifyHDelCommand(key, fields));
+    logWriter.value().log(aoflogging::stringifyHdelCommand(key, fields));
   }
 
   for (auto &kv : bucket.data) {

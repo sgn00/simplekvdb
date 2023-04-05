@@ -9,12 +9,12 @@ namespace simplekvdb {
 
 namespace aoflogging {
 
-class AOFLoader {
+class AofLoader {
  public:
   static bool loadAndExecute(KvStore& kvStore);
 
  private:
-  static void execute(KvStore& kvStore, tCommand command);
+  static void execute(KvStore& kvStore, TCommand command);
 };
 
 }  // namespace aoflogging

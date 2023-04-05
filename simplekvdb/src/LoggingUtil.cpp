@@ -30,7 +30,7 @@ std::string stringifyDelCommand(const std::vector<std::string> &keys) {
 }
 
 // HSET|XX|KEY|XX|FIELD1|XX|VALUE1|XX|FIELD2|XX|VALUE2
-std::string stringifyHSetCommand(
+std::string stringifyHsetCommand(
     const std::string &key,
     const std::vector<std::pair<std::string, std::string>> &fieldValuePairs) {
   fmt::memory_buffer buffer;
@@ -47,7 +47,7 @@ std::string stringifyHSetCommand(
 }
 
 // HDEL|XX|KEY|XX|FIELD1|XX|FIELD2
-std::string stringifyHDelCommand(const std::string &key,
+std::string stringifyHdelCommand(const std::string &key,
                                  const std::vector<std::string> &fields) {
   fmt::memory_buffer buffer;
   fmt::format_to(std::back_inserter(buffer), "{}{}{}{}{}", HDEL, DELIM,

@@ -1,8 +1,6 @@
-#include "kvserver/server.hpp"
+#include "kvserver/Server.hpp"
 
 #include <fmt/ranges.h>
-
-#include "simplekvdb/AOFLoader.hpp"
 
 using namespace kvserver;
 

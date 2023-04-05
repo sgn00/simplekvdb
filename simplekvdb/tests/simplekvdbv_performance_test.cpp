@@ -3,7 +3,7 @@
 #include <iostream>
 
 #include "simplekvdb/KvStore.hpp"
-#include "testutil.hpp"
+#include "Testutil.hpp"
 
 using namespace simplekvdb;
 

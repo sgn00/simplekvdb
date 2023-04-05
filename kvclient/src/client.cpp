@@ -1,4 +1,4 @@
-#include "kvclient/client.hpp"
+#include "kvclient/Client.hpp"
 
 #include <fmt/ranges.h>
 
@@ -12,7 +12,7 @@ using CommResult = std::tuple<int, int, std::string, int>;
 Client::Client(const std::string &serverIP, int port)
     : serverIP(serverIP), port(port), client(serverIP, port) {}
 
-std::string Client::send(const tParseCommand &command) {
+std::string Client::send(const TParseCommand &command) {
   if (std::holds_alternative<SetCommand>(command)) {
     return sendSet(std::get<SetCommand>(command));
   } else if (std::holds_alternative<GetCommand>(command)) {
@@ -47,7 +47,7 @@ std::string Client::getErrorMessage(int errorCode) {
   }
 }
 
-bool Client::statusIsOK(int status) {
+bool Client::statusIsOk(int status) {
   return status == static_cast<int>(simplekvdb::Result::Status::OK);
 }
 
@@ -55,7 +55,7 @@ std::string Client::sendSet(const SetCommand &setCommand) {
   auto [status, errorCode, strResult, intResult] =
       client.call(SET, setCommand.key, setCommand.value).as<CommResult>();
 
-  if (statusIsOK(status)) {
+  if (statusIsOk(status)) {
     return "OK";
   }
 
@@ -66,7 +66,7 @@ std::string Client::sendGet(const GetCommand &getCommand) {
   auto [status, errorCode, strResult, intResult] =
       client.call(GET, getCommand.key).as<CommResult>();
 
-  if (statusIsOK(status)) {
+  if (statusIsOk(status)) {
     return fmt::format("\"{}\"", strResult);
   }
 
@@ -77,7 +77,7 @@ std::string Client::sendDel(const DelCommand &delCommand) {
   auto [status, errorCode, strResult, intResult] =
       client.call(DEL, delCommand.keys).as<CommResult>();
 
-  if (statusIsOK(status)) {
+  if (statusIsOk(status)) {
     return fmt::format("(integer) {}", intResult);
   }
 
@@ -89,7 +89,7 @@ std::string Client::sendHSet(const HSetCommand &hsetCommand) {
       client.call(HSET, hsetCommand.key, hsetCommand.fieldValuePairs)
           .as<CommResult>();
 
-  if (statusIsOK(status)) {
+  if (statusIsOk(status)) {
     return fmt::format("(integer) {}", intResult);
   }
 
@@ -100,7 +100,7 @@ std::string Client::sendHDel(const HDelCommand &hdelCommand) {
   auto [status, errorCode, strResult, intResult] =
       client.call(HDEL, hdelCommand.key, hdelCommand.fields).as<CommResult>();
 
-  if (statusIsOK(status)) {
+  if (statusIsOk(status)) {
     return fmt::format("(integer) {}", intResult);
   }
 
@@ -110,7 +110,7 @@ std::string Client::sendHDel(const HDelCommand &hdelCommand) {
 std::string Client::sendHGet(const HGetCommand &hgetCommand) {
   auto [status, errorCode, strResult, intResult] =
       client.call(HGET, hgetCommand.key, hgetCommand.field).as<CommResult>();
-  if (statusIsOK(status)) {
+  if (statusIsOk(status)) {
     return fmt::format("\"{}\"", strResult);
   }
 

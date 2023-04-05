@@ -2,7 +2,6 @@
 #include <thread>
 
 #include "simplekvdb/KvStore.hpp"
-#include "testutil.hpp"
 
 using namespace simplekvdb;
 

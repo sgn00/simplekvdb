@@ -8,7 +8,7 @@ namespace simplekvdb {
 
 namespace aoflogging {
 
-class AOFParser {
+class AofParser {
  private:
   static bool extractElement(const std::string& line, size_t& pos, int length,
                              std::string& output);
@@ -31,7 +31,7 @@ class AOFParser {
                                                   size_t& pos);
 
  public:
-  static simplekvdb::tCommand parseLine(const std::string& line);
+  static simplekvdb::TCommand parseLine(const std::string& line);
 };
 
 class AOFParseException : public std::runtime_error {

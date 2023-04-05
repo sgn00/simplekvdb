@@ -1,8 +1,8 @@
 #include <catch2/catch.hpp>
 
-#include "simplekvdb/AOFLoader.hpp"
+#include "Testutil.hpp"
+#include "simplekvdb/AofLoader.hpp"
 #include "simplekvdb/KvStore.hpp"
-#include "testutil.hpp"
 
 using namespace simplekvdb;
 

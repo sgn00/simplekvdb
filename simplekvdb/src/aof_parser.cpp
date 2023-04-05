@@ -1,10 +1,9 @@
-#include "simplekvdb/AOFParser.hpp"
-
+#include "simplekvdb/AofParser.hpp"
 #include "simplekvdb/LoggingUtil.hpp"
 
 using namespace simplekvdb::aoflogging;
 
-bool AOFParser::extractElement(const std::string &line, size_t &pos, int length,
+bool AofParser::extractElement(const std::string &line, size_t &pos, int length,
                                std::string &output) {
   if (pos + length > line.size()) {
     return false;
@@ -14,7 +13,7 @@ bool AOFParser::extractElement(const std::string &line, size_t &pos, int length,
   return true;
 }
 
-bool AOFParser::extractField(const std::string &line, size_t &pos,
+bool AofParser::extractField(const std::string &line, size_t &pos,
                              std::string &field) {
   while (pos < line.size() && line[pos] != '|') {
     field += line[pos];
@@ -27,7 +26,7 @@ bool AOFParser::extractField(const std::string &line, size_t &pos,
   return true;
 }
 
-bool AOFParser::extractLength(const std::string &line, size_t &pos,
+bool AofParser::extractLength(const std::string &line, size_t &pos,
                               int &length) {
   std::string lengthStr;
   while (pos < line.size() && line[pos] != '|') {
@@ -44,7 +43,7 @@ bool AOFParser::extractLength(const std::string &line, size_t &pos,
   return true;
 }
 
-simplekvdb::SetCommand AOFParser::parseSetCommand(const std::string &line,
+simplekvdb::SetCommand AofParser::parseSetCommand(const std::string &line,
                                                   size_t &pos) {
   std::string key, value;
   int keyLength, valueLength;
@@ -71,7 +70,7 @@ simplekvdb::SetCommand AOFParser::parseSetCommand(const std::string &line,
   return {key, value};
 }
 
-simplekvdb::DelCommand AOFParser::parseDelCommand(const std::string &line,
+simplekvdb::DelCommand AofParser::parseDelCommand(const std::string &line,
                                                   size_t &pos) {
   std::vector<std::string> keys;
   while (pos < line.size()) {
@@ -92,7 +91,7 @@ simplekvdb::DelCommand AOFParser::parseDelCommand(const std::string &line,
   return DelCommand{keys};
 }
 
-simplekvdb::HDelCommand AOFParser::parseHDelCommand(const std::string &line,
+simplekvdb::HDelCommand AofParser::parseHDelCommand(const std::string &line,
                                                     size_t &pos) {
   std::string key;
   int keyLength;
@@ -129,7 +128,7 @@ simplekvdb::HDelCommand AOFParser::parseHDelCommand(const std::string &line,
   return {key, elements};
 }
 
-simplekvdb::HSetCommand AOFParser::parseHSetCommand(const std::string &line,
+simplekvdb::HSetCommand AofParser::parseHSetCommand(const std::string &line,
                                                     size_t &pos) {
   std::string key;
   int keyLength;
@@ -177,7 +176,7 @@ simplekvdb::HSetCommand AOFParser::parseHSetCommand(const std::string &line,
   return {key, fieldValuePairs};
 }
 
-simplekvdb::tCommand AOFParser::parseLine(const std::string &line) {
+simplekvdb::TCommand AofParser::parseLine(const std::string &line) {
   size_t pos = 0;
   std::string command;
 

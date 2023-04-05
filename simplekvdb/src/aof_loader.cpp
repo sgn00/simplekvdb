@@ -1,15 +1,14 @@
-#include "simplekvdb/AOFLoader.hpp"
-
 #include <fmt/core.h>
 
 #include <fstream>
 
-#include "simplekvdb/AOFParser.hpp"
+#include "simplekvdb/AofLoader.hpp"
+#include "simplekvdb/AofParser.hpp"
 #include "simplekvdb/LoggingUtil.hpp"
 
 using namespace simplekvdb;
 
-void aoflogging::AOFLoader::execute(KvStore &kvStore, tCommand command) {
+void aoflogging::AofLoader::execute(KvStore &kvStore, TCommand command) {
   if (std::holds_alternative<SetCommand>(command)) {
     auto c = std::get<SetCommand>(command);
     kvStore.set(c.key, c.value);
@@ -25,7 +24,7 @@ void aoflogging::AOFLoader::execute(KvStore &kvStore, tCommand command) {
   }
 }
 
-bool aoflogging::AOFLoader::loadAndExecute(KvStore &kvStore) {
+bool aoflogging::AofLoader::loadAndExecute(KvStore &kvStore) {
   bool loggingEnabledState = kvStore.isLoggingEnabled();
   kvStore.setLoggingEnabled(false);
   std::string filePath = getFileName(kvStore.getIdent());
@@ -37,14 +36,14 @@ bool aoflogging::AOFLoader::loadAndExecute(KvStore &kvStore) {
     return false;
   }
 
-  AOFParser parser;
+  AofParser parser;
 
   int lineNumber = 0;
   std::string line;
   while (std::getline(inputFile, line)) {
     lineNumber++;
     try {
-      simplekvdb::tCommand command = parser.parseLine(line);
+      simplekvdb::TCommand command = parser.parseLine(line);
       execute(kvStore, command);
     } catch (const AOFParseException &e) {
       fmt::print(stderr, "AOFParseException at line {}: {}\n", lineNumber,
