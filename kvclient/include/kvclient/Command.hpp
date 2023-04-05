@@ -1,47 +1,49 @@
 #pragma once
 #include <string>
-#include <vector>
 #include <variant>
+#include <vector>
 
 namespace kvclient {
 
-    const std::string GET = "GET";
-    const std::string SET = "SET";
-    const std::string DEL = "DEL";
-    const std::string HSET = "HSET";
-    const std::string HGET = "HGET";
-    const std::string HDEL = "HDEL";
-    const std::string QUIT = "QUIT";
-    
-    struct SetCommand {
-        std::string key;
-        std::string value;
-    };
+const std::string GET = "GET";
+const std::string SET = "SET";
+const std::string DEL = "DEL";
+const std::string HSET = "HSET";
+const std::string HGET = "HGET";
+const std::string HDEL = "HDEL";
+const std::string QUIT = "QUIT";
 
-    struct DelCommand {
-        std::vector<std::string> keys;
-    };
+struct SetCommand {
+  std::string key;
+  std::string value;
+};
 
-    struct GetCommand {
-        std::string key;
-    };
+struct DelCommand {
+  std::vector<std::string> keys;
+};
 
-    struct HSetCommand {
-        std::string key;
-        std::vector<std::pair<std::string,std::string>> fieldValuePairs;
-    };
+struct GetCommand {
+  std::string key;
+};
 
-    struct HGetCommand {
-        std::string key;
-        std::string field;
-    };
+struct HSetCommand {
+  std::string key;
+  std::vector<std::pair<std::string, std::string>> fieldValuePairs;
+};
 
-    struct HDelCommand {
-        std::string key;
-        std::vector<std::string> fields;
-    };
+struct HGetCommand {
+  std::string key;
+  std::string field;
+};
 
-    struct QuitCommand {};
+struct HDelCommand {
+  std::string key;
+  std::vector<std::string> fields;
+};
 
-    using tParseCommand = std::variant<SetCommand,DelCommand,GetCommand,HSetCommand,HGetCommand,HDelCommand,QuitCommand>;
-}
+struct QuitCommand {};
+
+using tParseCommand =
+    std::variant<SetCommand, DelCommand, GetCommand, HSetCommand, HGetCommand,
+                 HDelCommand, QuitCommand>;
+}  // namespace kvclient

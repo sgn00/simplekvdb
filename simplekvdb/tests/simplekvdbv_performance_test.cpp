@@ -1,5 +1,4 @@
 #include <catch2/catch.hpp>
-
 #include <chrono>
 #include <iostream>
 
@@ -12,21 +11,23 @@ constexpr int kNumThreads = 10;
 constexpr int kNumOperations = 100000;
 
 // for each thread for kNumOperations
-double test_function(KvStore& kvStore, int thread_id) {
-    auto start = std::chrono::high_resolution_clock::now();
+double test_function(KvStore &kvStore, int thread_id) {
+  auto start = std::chrono::high_resolution_clock::now();
 
-    for (int i = 0; i < kNumOperations; i++) {
-        std::string key = std::to_string(thread_id * kNumOperations + i);
-        kvStore.set(key, std::to_string(i));
-        int value;
-        kvStore.get(key);
-        kvStore.del({key});
-    }
+  for (int i = 0; i < kNumOperations; i++) {
+    std::string key = std::to_string(thread_id * kNumOperations + i);
+    kvStore.set(key, std::to_string(i));
+    int value;
+    kvStore.get(key);
+    kvStore.del({key});
+  }
 
-    auto end = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+  auto end = std::chrono::high_resolution_clock::now();
+  auto duration =
+      std::chrono::duration_cast<std::chrono::microseconds>(end - start)
+          .count();
 
-    return static_cast<double>(duration) / 1000000.0; // Return time in seconds
+  return static_cast<double>(duration) / 1000000.0;  // Return time in seconds
 }
 
 // TEST_CASE("Multithreaded performance") {

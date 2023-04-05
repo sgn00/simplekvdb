@@ -1,49 +1,48 @@
 #pragma once
+#include <tuple>
+
 #include "rpc/server.h"
 #include "simplekvdb/KvStore.hpp"
-#include <tuple>
 
 namespace kvserver {
 
-using CommResult = std::tuple<int,int,std::string,int>;
+using CommResult = std::tuple<int, int, std::string, int>;
 
 class Server {
+ public:
+  Server(int port, bool loggingEnabled);
 
-public:
+  void start();
 
-    Server(int port, bool loggingEnabled);
+ private:
+  const int size = 10'000'000;
 
-    void start();
+  const int port;
 
-private:
+  const int DB_IDENTIFIER = 1;
 
-    const int size = 10'000'000;
+  simplekvdb::KvStore kvStore;
 
-    const int port;
+  rpc::server server;
 
-    const int DB_IDENTIFIER = 1;
+  void bindFunctions();
 
-    simplekvdb::KvStore kvStore;
+  static CommResult convertToCommResult(const simplekvdb::Result &r);
 
-    rpc::server server;
+  CommResult set(const std::string &key, const std::string &value);
 
-    void bindFunctions();
+  CommResult get(const std::string &key);
 
-    static CommResult convertToCommResult(const simplekvdb::Result& r);
+  CommResult del(const std::vector<std::string> &keys);
 
-    CommResult set(const std::string& key, const std::string& value);
+  CommResult hget(const std::string &key, const std::string &field);
 
-    CommResult get(const std::string& key);
+  CommResult hset(
+      const std::string &key,
+      const std::vector<std::pair<std::string, std::string>> &fieldValuePairs);
 
-    CommResult del(const std::vector<std::string>& keys);
-
-    CommResult hget(const std::string& key, const std::string& field);
-
-    CommResult hset(const std::string& key, const std::vector<std::pair<std::string,std::string>>& fieldValuePairs);
-
-    CommResult hdel(const std::string& key, const std::vector<std::string>& fields);
-
+  CommResult hdel(const std::string &key,
+                  const std::vector<std::string> &fields);
 };
 
-
-}
+}  // namespace kvserver

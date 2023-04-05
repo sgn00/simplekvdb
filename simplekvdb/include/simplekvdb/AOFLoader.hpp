@@ -2,25 +2,21 @@
 
 #include <string>
 
-#include "KvStore.hpp"
 #include "Command.hpp"
+#include "KvStore.hpp"
 
 namespace simplekvdb {
 
-    namespace aoflogging {
+namespace aoflogging {
 
-            class AOFLoader {
+class AOFLoader {
+ public:
+  static bool loadAndExecute(KvStore& kvStore);
 
-            public:
-                
-                static bool loadAndExecute(KvStore& kvStore);
+ private:
+  static void execute(KvStore& kvStore, tCommand command);
+};
 
-            private:
+}  // namespace aoflogging
 
-                static void execute(KvStore& kvStore, tCommand command);
-
-            };
-
-    }
-
-}
+}  // namespace simplekvdb

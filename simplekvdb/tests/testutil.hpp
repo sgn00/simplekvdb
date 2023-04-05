@@ -1,20 +1,20 @@
 #pragma once
 
 #include <filesystem>
-#include "simplekvdb/LoggingUtil.hpp"
 #include <iostream>
+
+#include "simplekvdb/LoggingUtil.hpp"
 
 using namespace simplekvdb;
 
 class DeleteFile {
-public:
+ public:
+  int IDENT;
 
-    int IDENT;
+  DeleteFile(int ident) : IDENT(ident) {}
 
-    DeleteFile(int ident) : IDENT(ident) {}
-
-    ~DeleteFile() {
-        std::filesystem::path filePath = aoflogging::getFileName(IDENT);
-        bool res = std::filesystem::remove(filePath);
-    }
+  ~DeleteFile() {
+    std::filesystem::path filePath = aoflogging::getFileName(IDENT);
+    bool res = std::filesystem::remove(filePath);
+  }
 };

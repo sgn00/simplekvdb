@@ -1,86 +1,82 @@
 #pragma once
-#include <variant>
-#include <list>
-#include <shared_mutex>
-#include <mutex>
-#include <string>
-#include <optional>
-#include <vector>
 #include <atomic>
+#include <list>
+#include <mutex>
+#include <optional>
+#include <shared_mutex>
+#include <string>
 #include <unordered_map>
+#include <variant>
+#include <vector>
 
-#include "Result.hpp"
 #include "LogWriter.hpp"
+#include "Result.hpp"
 
 namespace simplekvdb {
 
-    namespace aoflogging {
-        class AOFLoader;
-    }
+namespace aoflogging {
+class AOFLoader;
+}
 
-    using TValueVariant = std::variant<std::string,std::unordered_map<std::string,std::string>>;
+using TValueVariant =
+    std::variant<std::string, std::unordered_map<std::string, std::string>>;
 
-    const double LOAD_FACTOR = 0.75;
+const double LOAD_FACTOR = 0.75;
 
 class KvStore {
+ private:
+  struct Bucket {
+    std::list<std::pair<std::string, TValueVariant>> data;
+    mutable std::shared_mutex mutex;
+  };
 
-private:
+  std::vector<Bucket> buckets;
+  std::hash<std::string> hasher;
 
-    struct Bucket {
-        std::list<std::pair<std::string,TValueVariant>> data;
-        mutable std::shared_mutex mutex;
-    };
+  const int DB_IDENTIFIER;
 
-    std::vector<Bucket> buckets;
-    std::hash<std::string> hasher;
+  const int MAX_NUM_ELEMENTS;
 
-    const int DB_IDENTIFIER;
+  std::optional<LogWriter> logWriter;
 
-    const int MAX_NUM_ELEMENTS;
+  bool loggingEnabled;
 
-    std::optional<LogWriter> logWriter;
+  std::atomic<size_t> numElements{0};
 
-    bool loggingEnabled;
+  Bucket& getBucket(const std::string& key);
 
-    std::atomic<size_t> numElements {0};
+  const Bucket& getBucket(const std::string& key) const;
 
-    Bucket& getBucket(const std::string& key);
+  bool isFull() const;
 
-    const Bucket& getBucket(const std::string& key) const;
+  void setLoggingEnabled(bool enabled);
 
-    bool isFull() const;
+  friend class aoflogging::AOFLoader;
 
-    void setLoggingEnabled(bool enabled);
+ public:
+  explicit KvStore(int ident, size_t numBuckets, bool loggingEnabled);
 
-    friend class aoflogging::AOFLoader;
+  size_t size() const;
 
+  size_t capacity() const;
 
-public:
+  int getIdent() const;
 
-    explicit KvStore(int ident, size_t numBuckets, bool loggingEnabled);
+  bool isLoggingEnabled();
 
-    size_t size() const;
+  Result set(const std::string& key, const std::string& value);
 
-    size_t capacity() const;
+  Result get(const std::string& key) const;
 
-    int getIdent() const;
+  Result del(const std::vector<std::string>& keys);
 
-    bool isLoggingEnabled();
+  Result hset(
+      const std::string& key,
+      const std::vector<std::pair<std::string, std::string>>& fieldValuePairs);
 
-    Result set(const std::string& key, const std::string& value);
+  Result hget(const std::string& key, const std::string& field) const;
 
-    Result get(const std::string& key) const;
-
-    Result del(const std::vector<std::string>& keys);
-
-    Result hset(const std::string& key, const std::vector<std::pair<std::string,std::string>>& fieldValuePairs);
-
-    Result hget(const std::string& key, const std::string& field) const;
-
-    Result hdel(const std::string& key, const std::vector<std::string>& fields);
-
-
-
+  Result hdel(const std::string& key, const std::vector<std::string>& fields);
 };
 
-}
+}  // namespace simplekvdb

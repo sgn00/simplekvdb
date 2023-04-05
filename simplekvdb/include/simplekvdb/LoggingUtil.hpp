@@ -4,29 +4,32 @@
 
 namespace simplekvdb {
 
-    namespace aoflogging {
+namespace aoflogging {
 
-        const std::string SET = "SET";
-        const std::string DEL = "DEL";
-        const std::string HSET = "HSET";
-        const std::string HDEL = "HDEL";
-        const std::string DELIM = "|";
+const std::string SET = "SET";
+const std::string DEL = "DEL";
+const std::string HSET = "HSET";
+const std::string HDEL = "HDEL";
+const std::string DELIM = "|";
 
-        // SET|XX|KEY|XX|VALUE
-        std::string stringifySetCommand(const std::string& key, const std::string& value);
+// SET|XX|KEY|XX|VALUE
+std::string stringifySetCommand(const std::string& key,
+                                const std::string& value);
 
-        // DEL|XX|KEY
-        std::string stringifyDelCommand(const std::vector<std::string>& keys);
+// DEL|XX|KEY
+std::string stringifyDelCommand(const std::vector<std::string>& keys);
 
-        // HSET|XX|KEY|XX|FIELD1|XX|VALUE1|XX|FIELD2|XX|VALUE2
-        std::string stringifyHSetCommand(const std::string& key, const std::vector<std::pair<std::string,std::string>>& fieldValuePairs);
+// HSET|XX|KEY|XX|FIELD1|XX|VALUE1|XX|FIELD2|XX|VALUE2
+std::string stringifyHSetCommand(
+    const std::string& key,
+    const std::vector<std::pair<std::string, std::string>>& fieldValuePairs);
 
-        // HDEL|XX|KEY|XX|FIELD1|XX|FIELD2
-        std::string stringifyHDelCommand(const std::string& key, const std::vector<std::string>& fields);
+// HDEL|XX|KEY|XX|FIELD1|XX|FIELD2
+std::string stringifyHDelCommand(const std::string& key,
+                                 const std::vector<std::string>& fields);
 
-        std::string getFileName(int DB_IDENTIFIER);
+std::string getFileName(int DB_IDENTIFIER);
 
+}  // namespace aoflogging
 
-    }
-
-}
+}  // namespace simplekvdb

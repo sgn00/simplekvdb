@@ -1,16 +1,19 @@
-#include <string>
+#include <fmt/core.h>
+
 #include <iostream>
 #include <optional>
-#include <fmt/core.h>
-#include "kvclient/client.hpp"
+#include <string>
+
 #include "kvclient/CommandParser.hpp"
+#include "kvclient/client.hpp"
 
-
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
   if (argc != 3) {
     fmt::print("Wrong num of args\n");
     fmt::print(stderr, "Please specify server IP and server port number.\n");
-    fmt::print(stderr, "Format: ./kvclient <server ip> <server port> eg. ./kvserver 127.0.0.1 8080\n");
+    fmt::print(stderr,
+               "Format: ./kvclient <server ip> <server port> eg. ./kvserver "
+               "127.0.0.1 8080\n");
     return 1;
   }
 
@@ -27,14 +30,15 @@ int main(int argc, char* argv[]) {
   fmt::print("> ");
   while (std::getline(std::cin, input)) {
     try {
-      kvclient::tParseCommand command = kvclient::CommandParser::parseLine(input);
+      kvclient::tParseCommand command =
+          kvclient::CommandParser::parseLine(input);
       if (std::holds_alternative<kvclient::QuitCommand>(command)) {
         fmt::print("OK\n");
         break;
       }
       std::string res = client.send(command);
       fmt::print("{}\n", res);
-    } catch (const kvclient::InvalidCommandException& e) {
+    } catch (const kvclient::InvalidCommandException &e) {
       fmt::print(stderr, "(error) {}\n", e.what());
     }
     fmt::print("> ");

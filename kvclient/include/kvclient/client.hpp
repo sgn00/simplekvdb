@@ -1,46 +1,39 @@
 #pragma once
-#include "rpc/client.h"
-#include "kvclient/Command.hpp"
 #include <string>
+
+#include "kvclient/Command.hpp"
+#include "rpc/client.h"
 
 namespace kvclient {
 
-
 class Client {
+ public:
+  Client(const std::string &serverIP, int port);
 
+  std::string send(const tParseCommand &command);
 
-public:
+ private:
+  const std::string serverIP;
 
-    Client(const std::string& serverIP, int port);
+  const int port;
 
-    std::string send(const tParseCommand& command);
+  rpc::client client;
 
+  static std::string getErrorMessage(int errorCode);
 
-private:
+  static bool statusIsOK(int status);
 
-    const std::string serverIP;
+  std::string sendSet(const SetCommand &setCommand);
 
-    const int port;
+  std::string sendGet(const GetCommand &getCommand);
 
-    rpc::client client;
+  std::string sendDel(const DelCommand &delCommand);
 
-    static std::string getErrorMessage(int errorCode);
+  std::string sendHSet(const HSetCommand &hsetCommand);
 
-    static bool statusIsOK(int status);
+  std::string sendHDel(const HDelCommand &hdelCommand);
 
-    std::string sendSet(const SetCommand& setCommand);
-
-    std::string sendGet(const GetCommand& getCommand);
-
-    std::string sendDel(const DelCommand& delCommand);
-
-    std::string sendHSet(const HSetCommand& hsetCommand);
-
-    std::string sendHDel(const HDelCommand& hdelCommand);
-
-    std::string sendHGet(const HGetCommand& hgetCommand);
-
+  std::string sendHGet(const HGetCommand &hgetCommand);
 };
 
-
-}
+}  // namespace kvclient
