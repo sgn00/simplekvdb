@@ -1,6 +1,5 @@
 # simplekvdb
-simplekvdb is a Redis-like key-value store written in C++. Unlike Redis, it is multithreaded and supports true concurrency.
-&nbsp;
+simplekvdb is a Redis-like key-value store written in C++. Unlike Redis, it is multithreaded and supports true concurrency.  
 This project uses C++20 and Cmake. It is written and tested on Ubuntu 20.04 with GCC-11.
   
 #### Features:
@@ -49,3 +48,22 @@ This project was mainly for me to experiment with some modern C++ features and t
 * Unit testing with `catch2`
 * Configuring CMake properly
 * Timing code with `std::chrono`
+
+#### Design Notes
+The main hash table is found in `KvStore.hpp / KvStore.cpp`.
+* fixed size (to reduce complexity in terms of resizing). kvserver initializes a KvStore of size 10,000,000.
+* Uses chaining to resolve collisions
+* Fine-grained locking of buckets (each bucket has a mutex) for concurrency
+* atomic operations on insertion (to prevent race)
+* Will load from an AOF file for its identifier (if it can be found) on initialization. Each KvStore has an identifier. kvserver always sets it to 1.
+* Can specify to either log or not log write operations to construct the AOF file.
+
+The logging is done by `LogWriter.hpp / LogWriter.cpp`.
+* Spawns an async thread for disk I/O operations
+* Maintains a `vector<char>` as a buffer
+* On call to `log`, async thread is notified by condition_variable to flush the buffer and write to file
+
+Parsing and loading of log file by `AofParser, AofLoader`
+* Logs are stored in string format for ease of readability. It uses fixed size formatting. For example for the `HSET` command:  
+`HSET|XX|KEY|XX|FIELD1|XX|VALUE1|XX|FIELD2|XX|VALUE2`  
+where `XX` represents the length of the next element.
