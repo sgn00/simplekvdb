@@ -23,19 +23,19 @@ These external dependencies should be automatically satisfied by CMake.
 #### Getting Started
 Ensure you have Cmake version of at least 3.14 and a C++20 compiler.
 ##### Build
-Clone the repository and run:
-```mkdir build && cd build```
+Clone the repository and run:  
+```mkdir build && cd build```  
 ```cmake .. && cmake --build .```
 
 ##### Run
 The kvserver and kvclient binaries can be found in build/ under their respective folders.
 
-Start the kvserver:
-format: `./kvserver <port> <enable logging>`
-`./kvserver 8080 true`
+Start the kvserver:  
+format: `./kvserver <port> <enable logging>`  
+`./kvserver 8080 true`  
 
-Start the kvclient:
-format: `./kvclient <server ip> <server port>`
+Start the kvclient:  
+format: `./kvclient <server ip> <server port>`  
 `./kvclient localhost 8080`
 
 You can now specify redis-cli commands with similar syntax. For eg. for [GET](https://redis.io/commands/get/).
