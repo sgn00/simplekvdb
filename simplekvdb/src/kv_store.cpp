@@ -61,13 +61,16 @@ Result KvStore::set(const std::string &key, const std::string &value) {
 
   if (inserted) {
     return Result{Result::Status::OK};
-  } else if (!isFull()) {
-    bucket.data.emplace_back(key, value);
-    numElements.fetch_add(1, std::memory_order_release);
-    return Result{Result::Status::OK};
   } else {
-    return Result{Result::Status::Error, Result::ErrorCode::DBFull};
-  }
+    std::unique_lock<std::mutex> insertionLock(insertionMutex); // make check and increment op atomic
+    if (!isFull()) {
+      bucket.data.emplace_back(key, value);
+      numElements.fetch_add(1, std::memory_order_release);
+      return Result{Result::Status::OK};
+    } else {
+      return Result{Result::Status::Error, Result::ErrorCode::DBFull};
+    }
+  } 
 }
 
 Result KvStore::get(const std::string &key) const {
@@ -138,17 +141,20 @@ Result KvStore::hset(
 
   if (inserted) {
     return Result{Result::Status::OK, static_cast<int>(fieldValuePairs.size())};
-  } else if (!isFull()) {
-    std::unordered_map<std::string, std::string> umap;
-    for (const auto &[k, v] : fieldValuePairs) {
-      umap[k] = v;
-    }
-    bucket.data.emplace_back(key, umap);
-    numElements.fetch_add(1, std::memory_order_release);
-    return Result{Result::Status::OK, static_cast<int>(fieldValuePairs.size())};
   } else {
-    return Result{Result::Status::Error, Result::ErrorCode::DBFull};
-  }
+    std::unique_lock<std::mutex> insertionLock(insertionMutex); // make check and increment op atomic
+    if (!isFull()) {
+      std::unordered_map<std::string, std::string> umap;
+      for (const auto &[k, v] : fieldValuePairs) {
+        umap[k] = v;
+      }
+      bucket.data.emplace_back(key, umap);
+      numElements.fetch_add(1, std::memory_order_release);
+      return Result{Result::Status::OK, static_cast<int>(fieldValuePairs.size())};
+    } else {
+      return Result{Result::Status::Error, Result::ErrorCode::DBFull};
+    }
+  } 
 }
 
 Result KvStore::hget(const std::string &key, const std::string &field) const {

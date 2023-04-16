@@ -43,6 +43,8 @@ class KvStore {
 
   std::atomic<size_t> numElements{0};
 
+  std::mutex insertionMutex;
+
   Bucket& getBucket(const std::string& key);
 
   const Bucket& getBucket(const std::string& key) const;
