@@ -2,7 +2,7 @@
 #include "simplekvdb/KvStore.hpp"
 #include "simplekvdb/LoggingUtil.hpp"
 
-using namespace simplekvdb;
+namespace simplekvdb {
 
 KvStore::KvStore(int ident, size_t numBuckets, bool loggingEnabled)
     : DB_IDENTIFIER(ident),
@@ -204,4 +204,6 @@ Result KvStore::hdel(const std::string &key,
   }
 
   return Result{Result::Status::Error, Result::ErrorCode::KeyNotFound};
+}
+
 }

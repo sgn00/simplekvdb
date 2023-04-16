@@ -1,7 +1,8 @@
 #include "simplekvdb/AofParser.hpp"
 #include "simplekvdb/LoggingUtil.hpp"
 
-using namespace simplekvdb::aoflogging;
+namespace simplekvdb {
+namespace aoflogging {
 
 bool AofParser::extractElement(const std::string &line, size_t &pos, int length,
                                std::string &output) {
@@ -197,3 +198,6 @@ simplekvdb::TCommand AofParser::parseLine(const std::string &line) {
     throw AOFParseException("Unknown command");
   }
 }
+
+}  // namespace aoflogging
+}  // namespace simplekvdb

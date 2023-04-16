@@ -4,10 +4,11 @@
 
 #include "simplekvdb/Result.hpp"
 
-using namespace kvclient;
 using namespace simplekvdb;
 
 using CommResult = std::tuple<int, int, std::string, int>;
+
+namespace kvclient {
 
 Client::Client(const std::string &serverIP, int port)
     : serverIP(serverIP), port(port), client(serverIP, port) {}
@@ -116,3 +117,5 @@ std::string Client::sendHGet(const HGetCommand &hgetCommand) {
 
   return getErrorMessage(errorCode);
 }
+
+}  // namespace kvclient

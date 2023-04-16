@@ -1,6 +1,6 @@
 #include "kvclient/CommandParser.hpp"
 
-using namespace kvclient;
+namespace kvclient {
 
 TParseCommand CommandParser::parseLine(const std::string &line) {
   std::vector<std::string> tokens = parseTokens(line);
@@ -127,4 +127,6 @@ HDelCommand CommandParser::parseHDel(const std::vector<std::string> &tokens) {
   }
   return HDelCommand{
       tokens[1], std::vector<std::string>(tokens.begin() + 2, tokens.end())};
+}
+
 }

@@ -3,7 +3,7 @@
 
 #include "simplekvdb/LogWriter.hpp"
 
-using namespace simplekvdb;
+namespace simplekvdb {
 
 LogWriter::LogWriter(const std::string &filePath) : exitFlag(false) {
   logFile = std::ofstream(filePath, std::ios_base::app);
@@ -41,4 +41,6 @@ void LogWriter::asyncWriter() {
                 [this] { return exitFlag.load() || !buffer.empty(); });
     writeToFile();
   }
+}
+
 }

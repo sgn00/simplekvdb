@@ -2,8 +2,7 @@
 
 #include <fmt/ranges.h>
 
-using namespace kvserver;
-
+namespace kvserver {
 Server::Server(int port, bool loggingEnabled)
     : port(port), kvStore(DB_IDENTIFIER, size, loggingEnabled), server(port) {
   fmt::print("Using port: {}\n", port);
@@ -98,3 +97,4 @@ CommResult Server::convertToCommResult(const simplekvdb::Result &r) {
   }
   return std::make_tuple(field1, field2, field3, field4);
 }
+}  // namespace kvserver

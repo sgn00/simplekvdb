@@ -6,7 +6,7 @@
 #include "simplekvdb/AofParser.hpp"
 #include "simplekvdb/LoggingUtil.hpp"
 
-using namespace simplekvdb;
+namespace simplekvdb {
 
 void aoflogging::AofLoader::execute(KvStore &kvStore, TCommand command) {
   if (std::holds_alternative<SetCommand>(command)) {
@@ -57,4 +57,6 @@ bool aoflogging::AofLoader::loadAndExecute(KvStore &kvStore) {
   kvStore.setLoggingEnabled(loggingEnabledState);
 
   return true;
+}
+
 }
